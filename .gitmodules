@@ -1,3 +1,9 @@
 [submodule "miniChRIS-docker"]
 	path = miniChRIS-docker
 	url = https://github.com/FNNDSC/miniChRIS-docker
+[submodule "ChRIS_ultron_backEnd"]
+	path = ChRIS_ultron_backEnd
+	url = https://github.com/FNNDSC/ChRIS_ultron_backEnd
+[submodule "ChRIS_ui"]
+	path = ChRIS_ui
+	url = https://github.com/FNNDSC/ChRIS_ui
