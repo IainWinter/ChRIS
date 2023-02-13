@@ -3,8 +3,9 @@ if [ "$(id -u)" -eq 0 ]
   exit
 fi
 
-groupadd docker
-usermod -aG docker $USER
+sudo groupadd docker
+echo "Adding $USER to group 'docker'"
+sudo usermod -aG docker $USER
 
 read -p "Press any key to restart system $*"
 shutdown -r now
