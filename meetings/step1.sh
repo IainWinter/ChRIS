@@ -1,3 +1,8 @@
+if [ "$EUID" -e 0 ]
+  then echo "Please run as user"
+  exit
+fi
+
 groupadd docker
 usermod -aG docker $USER
 
