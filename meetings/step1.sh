@@ -1,4 +1,4 @@
-if [ "$EUID" -e 0 ]
+if [ "$EUID" -eq 0 ]
   then echo "Please run as user"
   exit
 fi
