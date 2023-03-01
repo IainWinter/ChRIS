@@ -10,7 +10,11 @@
 	</body>
 
 	<script src="https://d3js.org/d3.v4.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 	<script>
+
+		let nodeRadius = 20;
+
 		// Create the SVG of the d3 graph
 		// we can use vw and vh to scale it to the size of the screen
 		var svg = d3.select("#fdg")
@@ -20,9 +24,16 @@
 				.append("g");
 
 		// load data 
-		d3.json("https://iainwinter.com/tree/php/getitems.php?pid=0", (data) =>
+		d3.json("https://iainwinter.com/tree/php/getitems.php?pid=0", (_data) =>
 		{
-			var simulation = d3.forceSimulation(data.children)
+			// transform the tree json structure into nodes and links
+
+			let data = {
+				nodes: _data.children,
+				links: []
+			};
+			
+			var simulation = d3.forceSimulation(data.nodes)
 				.force("link", d3.forceLink()
 					.id(d => d.id)
 					.links(data.links)
@@ -32,8 +43,9 @@
 
 			var link = svg
 				.selectAll("line")
-				.data(data.links)
-				.enter()
+				.data(data.links);
+
+			var linkGroup = link.enter()
 				.append("line")
 					.style("stroke", "#aaa");
 
@@ -47,11 +59,10 @@
 					.attr("class", "node")
 				.call(drag(simulation));
 
-			let nodeRadius = 20;
-
 			nodeGroup.append("circle")
 				.attr("r", nodeRadius)
-				.style("fill", "#69b3a2");
+				.style("fill", "#69b3a2")
+				.on("click", addChildren);
 
 			nodeGroup.append("text")
 				.attr("dx", nodeRadius)
@@ -60,11 +71,9 @@
 
 		  	// Let's list the force we wanna apply on the network
 
-
-
 			function ticked() 
 			{
-			    link
+			    linkGroup
 		        	.attr("x1", d => d.source.x)
 			        .attr("y1", d => d.source.y)
 			        .attr("x2", d => d.target.x)
@@ -110,6 +119,65 @@
 				simulation
 					.force("center", d3.forceCenter(midX, midY))
 					.restart();
+			}
+
+			function addChildren(node)
+			{
+				if (node.open == true)
+					return;
+
+				node.open = true;
+
+				$.getJSON("https://iainwinter.com/tree/php/getitems.php?pid=" + node.id, (response) => 
+				{
+					for (let n of response.children)
+					{
+						data.nodes.push(n);
+						data.links.push({
+							target: n.id,
+							source: node.id
+						});
+					}
+
+					simulation.nodes(data.nodes)
+                  		.on("tick", ticked);
+
+        			simulation.force("link")
+                  		.links(data.links);
+
+					link = svg
+						.selectAll("line")
+						.data(data.links);
+
+					node = svg
+						.selectAll("g.node")
+						.data(data.nodes);
+
+					linkGroup = link.enter()
+						.append("line")
+							.style("stroke", "#aaa");
+
+					nodeGroup = node.enter()
+						.append("g")
+							.attr("class", "node")
+						.call(drag(simulation));
+
+					nodeGroup.append("circle")
+						.attr("r", nodeRadius)
+						.style("fill", "#69b3a2")
+						.on("click", addChildren);
+
+					nodeGroup.append("text")
+						.attr("dx", nodeRadius)
+						.attr("dy", nodeRadius)
+						.text(d => d.name);
+
+					node = nodeGroup.merge(node);
+					link = linkGroup.merge(link);
+
+					node.exit().remove();
+					node.exit().remove();
+				});
 			}
 
 			window.addEventListener("resize", resizeScreen);
