@@ -1,0 +1,183 @@
+<html>
+    <head>
+        <title>Example</title>
+    </head>
+    <body id="canvas">
+    </body>
+
+    <script>
+
+        let currentlySelectedNode = null;
+        let currentlySelectedNodeOffsetX = 0;
+        let currentlySelectedNodeOffsetY = 0;
+
+        function onNodeClick(e)
+        {
+            currentlySelectedNode = e.target.closest(".node");
+            currentlySelectedNodeOffsetX = e.offsetX;
+            currentlySelectedNodeOffsetY = e.offsetY;
+        }
+
+        function onNodeRelease(e)
+        {
+            currentlySelectedNode = null;
+        }
+
+        function onMouseDrag(e)
+        {
+            if (currentlySelectedNode === null) // exit if not selected
+                return;
+
+            currentlySelectedNode.style.left = `${e.pageX - currentlySelectedNodeOffsetX}px`;
+            currentlySelectedNode.style.top = `${e.pageY - currentlySelectedNodeOffsetY}px`;
+        }
+
+        function createNode(titleString, positionXFloat, positionYFloat)
+        {
+            let nodeHTMLString =  `
+                    <div class='node-header'>
+                        <h2 class='node-title'>${titleString}</h2>
+
+                        <div class='connection connection-left'></div>
+                        <div class='connection connection-right'></div>
+                    </div>
+                    <div class='node-body'>
+                        <span class='node-body-titled-value'>
+                            <span class='node-body-value-title'>plugininstances</span>
+                            <span><input class='node-body-value-input' type='text'/></span>
+                        </span>
+                        <span class='node-body-titled-value'>
+                            <span class='node-body-value-title'>filter</span>
+                            <span><input class='node-body-value-input' type='text'/></span>
+                        </span>
+                        <span class='node-body-titled-value'>
+                            <span class='node-body-value-title'>groupByInstance</span>
+                            <span><input class='node-body-value-input' type='text'/></span>
+                        </span>
+                    </div>
+                `;
+
+            let nodeDOM = document.createElement("div");
+            nodeDOM.classList = ["node"];
+            nodeDOM.innerHTML = nodeHTMLString;
+
+            nodeDOM.addEventListener("mousedown", onNodeClick);
+            nodeDOM.addEventListener("mouseup", onNodeRelease);
+
+            document.getElementById("canvas").append(nodeDOM);
+        }
+
+        createNode("test", 0, 0);
+
+        document.addEventListener("mousemove", onMouseDrag);
+
+    </script>
+    
+    <style>
+        .node
+        {
+            width: fit-content;
+            height: fit-content;
+
+            background: #245;
+            border-radius: 5px;
+
+            color: white;
+
+            position: absolute;
+        }
+
+        .node-header
+        {
+            background: #24a;
+            border-bottom: 1px solid #222;
+            border-radius: 5px 5px 0 0;
+            position: relative;
+            height: 36px;
+
+            user-select: none;
+            -webkit-user-select: none;
+            cursor: move;
+        }
+
+        .node-title
+        {
+            margin: auto;
+            padding-left: 10px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 18px;
+            line-height: 36px;
+            color: white;
+        }
+
+        .node-body
+        {
+            padding: 5px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .node-body-titled-value
+        {
+            margin-bottom: 5px;
+            /* line-height: 15px; */
+
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .node-body-value-title
+        {
+            font-family: Arial, Helvetica, sans-serif;
+            /* font-size: 12px; */
+            text-overflow: ellipsis;
+            vertical-align: middle;
+        }
+
+        .node-body-value-input
+        {
+            /* height: 12px; */
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+
+        .connection
+        {
+            background: white;
+            border-radius: 50%;
+            border: 1px solid black;
+
+            width: 8px;
+            height: 8px;
+
+            position: absolute;
+            top: calc(36px / 2 - 8px / 2);
+        }
+
+        .connection-left
+        {
+            left: -4px;
+        }
+
+        .connection-right
+        {
+            right: -4px;
+        }
+
+        .node-exmaple-1
+        {
+            position: fixed;
+
+            top: 50px;
+            left: 100px;
+        }
+
+        .node-exmaple-2
+        {
+            position: fixed;
+
+            top: 70px;
+            left: 500px;
+        }
+    </style>
+</html>
