@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Test of Force Directed Graph</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+	</head>
+	<body>
+		<svg id="graph"></svg>
+
+
+		<div class="controls">
+			<h3>Controls</h3>
+			<br>
+			<div class="inline-setting">
+				<p>Show Names</p>
+				<input id="show-names-checkbox" type="checkbox" checked>
+			</div>
+		</div>
+	</body>
+
+	<script src="https://d3js.org/d3.v4.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+	<script>
+		let width, height;
+		let	color = d3.scaleOrdinal(d3.schemeCategory10);
+
+		// Create svg
+
+		let svg = d3.select("#graph");
+
+		let nodes = [];
+		let links = [];
+
+		d3.json("https://iainwinter.com/tree/php/getitems.php?pid=0", function (response)
+		{
+			if (nodes.length == 0)
+			{
+				nodes.push(response.children[0]);
+				nodes[0].depth = 0;
+			}
+
+			let simulation = d3.forceSimulation(nodes)
+				.force("charge", d3.forceManyBody().strength(-500))
+				.force("link",   d3.forceLink(links).distance(100))      /// (d) => { return 100 + 10 * d.target.depth} 
+				.force("center", d3.forceCenter(width / 2, height / 2))
+				.on("tick", ticked);
+
+			let g = svg.append("g");
+			let link = g.append("g").attr("stroke", "#000").attr("stroke-width", 1.5).selectAll(".link");
+			let node = g.append("g").selectAll(".node");
+
+			restart();
+
+			function restart()
+			{
+				// Apply the general update pattern to the nodes.
+				node = node.data(nodes, function(d) { return d.id;});
+
+				node.exit().remove();
+
+				let insideNodeGroup = node.enter()
+					.append("g");
+
+				let nodeRadius = 12;
+
+				function getNodeRadius(d)
+				{
+					return 12;//50 - d.depth * 4; // max depth is 7 or 8 I think
+				}
+
+				insideNodeGroup
+					.append("text")
+					.attr("dx", getNodeRadius)
+					.attr("dy", getNodeRadius)
+					.attr("class", "node-title")
+					.text(d => d.name);
+
+				insideNodeGroup
+					.append("circle")
+						.attr("fill", (d) => color(d.id) )
+						.attr("r", getNodeRadius)
+						.on("click", (d) => addChildren(d))
+						.call(drag(simulation))
+
+				node = insideNodeGroup
+					.merge(node);
+
+
+				// Apply the general update pattern to the links.
+				link = link.data(links, (d) => `${d.source.id}-${d.target.id}`);
+				link.exit().remove();
+				link = link.enter().append("line").merge(link);
+
+				// Update and restart the simulation.
+				simulation.nodes(nodes);
+				simulation.force("link").links(links);
+				simulation.alpha(.8).alphaTarget(0).restart();
+			}
+
+			function ticked() 
+			{
+				node
+					.attr("transform", (d) => "translate(" + d.x + "," + d.y + ")");
+
+				link.attr("x1", function(d) { return d.source.x; })
+					.attr("y1", function(d) { return d.source.y; })
+					.attr("x2", function(d) { return d.target.x; })
+					.attr("y2", function(d) { return d.target.y; });
+			}
+
+			function drag(simulation) 
+			{    
+				function dragstarted(node) 
+				{
+					if (!event.active) simulation.alphaTarget(0.03).restart();
+					node.fx = node.x;
+					node.fy = node.y;
+				}
+
+				function dragged(node) 
+				{
+					node.fx = event.x;
+					node.fy = event.y;
+				}
+
+				function dragended(node)
+				{
+					if (!node.active) simulation.alpha(.3).alphaTarget(0);
+					node.fx = null;
+					node.fy = null;
+				}
+
+				return d3.drag()
+					.on("start", dragstarted)
+					.on("drag", dragged)
+					.on("end", dragended);
+			}
+
+			function addChildren(node)
+			{
+				if (node.open === true)
+					return;
+
+				node.open = true;
+
+				$.getJSON(`https://iainwinter.com/tree/php/getitems.php?pid=${node.id}`, function (json)
+				{
+					for (let n of json.children)
+					{
+						n.x = node.x;
+						n.y = node.y;
+						n.vx = node.vx;
+						n.vy = node.vy;
+						n.fx = null;
+						n.fy = null;
+						n.depth = node.depth + 1;
+
+						nodes.push(n);
+						links.push({
+							target: n,
+							source: node
+						});
+					}
+
+					if (json.children.length > 0)
+					{
+						restart();						
+					}
+				});
+			}
+
+			function handleZoom() 
+			{
+				d3.select('svg g')
+					.attr('transform', d3.event.transform);
+			}
+
+			svg.call(d3.zoom().on("zoom", handleZoom))
+
+			function resizeScreen(event)
+			{
+				let midX = event.target.innerWidth / 2;
+				let midY = event.target.innerHeight / 2;
+
+				simulation
+					.force("center", d3.forceCenter(midX, midY))
+					.restart();
+			}
+
+			window.addEventListener("resize", resizeScreen);
+			window.dispatchEvent(new Event('resize'));
+
+			$("#show-names-checkbox").on("input", (e) =>
+			{
+				let checked = $("#show-names-checkbox").is(":checked");
+
+				if (checked)
+					$(".node-title").show();
+				else 
+					$(".node-title").hide();
+			});
+		});
+
+	</script>
+
+	<style>
+
+		html, body
+		{
+			font-family: Arial;
+			margin: 0;
+			overflow: hidden;
+			display: flex;
+		}
+
+		p, h1, h2, h3
+		{
+			margin: 0;
+		}
+
+		.link
+		{
+			stroke: black;
+		}
+
+		#graph
+		{
+			width: 100vw;
+			height: 100vh;
+		}
+
+		.node-title 
+		{
+			user-select: none;
+			-webkit-user-select: none;
+			pointer-events: none;
+			cursor: default;
+			z-index: 10000;
+		}
+
+		.controls
+		{
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			width: 300px;
+			height: 100px;
+			background: rgba(0, 0, 0, .1);
+			padding: 15px;
+			border-radius: 0 10px 0 0;
+		}
+
+		.inline-setting
+		{
+			display: flex;
+			justify-content: space-between;
+		}
+
+		.inline-setting > *
+		{
+			margin: auto 0;
+		}
+
+	</style>
+</html>
