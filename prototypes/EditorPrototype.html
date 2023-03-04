@@ -5,7 +5,7 @@
     <body>
         <div id="canvas">
 
-            <svg>
+            <svg id="svg-canvas">
                 <g>
                     <line x1="100px" y1="100px" x1="100px" xy="100px" stroke="black"></line>
                 </g>
@@ -20,40 +20,102 @@
 
     <script>
 
-        let currentlySelectedNode = null;
-        let currentlySelectedNodeOffsetX = 0;
-        let currentlySelectedNodeOffsetY = 0;
+        // On click
+        //  If node, set active node to target
+        //  If node-socket, create a line and attach it to the target, with the end on the mouse
+
+        // On drag
+        //  If active node
+        //      move node
+        //  If active line
+        //      move end of line
+
+        // On release
+        //  If node
+        //      reset active
+        // If line
+        //  connect end to target, or reset begin socket
+
+        class ClickState
+        {
+            constructor()
+            {
+                this.activeNode = null;
+                this.activeSocket = null;
+                this.activeLine = null;
+
+                this.activeNodeClickOffsetX = 0;
+                this.activeNodeClickOffseY = 0;
+            }
+
+            clicked = function (nodeDOM, offsetX, offsetY)
+            {
+                let clickedNodeHeader =    nodeDOM.classList.contains("node-header")
+                                        || nodeDOM.classList.contains("node-title");
+
+                let clickedNodeSocket = nodeDOM.classList.contains("node-socket")
+
+                if (clickedNodeHeader || clickedNodeSocket)
+                {
+                    this.activeNode = nodeDOM.closest(".node");
+                    this.activeNodeClickOffseX = offsetX;
+                    this.activeNodeClickOffseY = offsetY;
+                }
+
+                if (nodeDOM.classList.contains("node-socket"))    // If clicked on a node socket
+                {
+                    let lineDOM = document.createElement("line");
+
+                    lineDOM.setAttribute("x1", 10);
+                    lineDOM.setAttribute("y1", 10);
+                    lineDOM.setAttribute("x2", 100);
+                    lineDOM.setAttribute("y2", 100);
+
+                    document.getElementById("svg-canvas").appendChild(lineDOM);
+
+                    this.activeSocket = nodeDOM;
+                    this.activeLine = lineDOM;
+                }
+            }
+
+            release = function(e)
+            {
+                this.activeNode = null;
+                this.activeLine = null;
+                this.activeSocket = null;
+            } 
+
+            drag = function (e)
+            {
+                if (this.activeSocket !== null)
+                {
+                    
+                    return;
+                }
+
+                if (this.activeNode === null) // exit if not selected
+                    return;
+
+                this.activeNode.style.left = `${e.pageX - this.activeNodeClickOffseX}px`;
+                this.activeNode.style.top = `${e.pageY - this.activeNodeClickOffseY}px`;
+            }
+        }
+
+        let clickState = new ClickState();
 
         function onNodeClick(e)
         {
-            if (   e.target.classList.contains("node-header")
-                || e.target.classList.contains("node-title"))
-            {
-                currentlySelectedNode = e.target.closest(".node");
-                currentlySelectedNodeOffsetX = e.offsetX;
-                currentlySelectedNodeOffsetY = e.offsetY;
-            }
+            clickState.clicked(e.target, e.offsetX, e.offsetY);
         }
 
         function onNodeRelease(e)
         {
-            currentlySelectedNode = null;
+            clickState.release(e);
         }
 
         function onMouseDrag(e)
         {
-            if (currentlySelectedNode === null) // exit if not selected
-                return;
-
-            currentlySelectedNode.style.left = `${e.pageX - currentlySelectedNodeOffsetX}px`;
-            currentlySelectedNode.style.top = `${e.pageY - currentlySelectedNodeOffsetY}px`;
-
-            onNodeMove(currentlySelectedNode);
-        }
-
-        function onNodeMove(node)
-        {
-
+            clickState.drag(e);
         }
 
         function createNode(titleString)
@@ -62,8 +124,8 @@
                     <div class='node-header'>
                         <h2 class='node-title'>${titleString}</h2>
 
-                        <div class='connection connection-left'></div>
-                        <div class='connection connection-right'></div>
+                        <div class='node-socket socket-left'></div>
+                        <div class='node-socket socket-right'></div>
                     </div>
                     <div class='node-body'>
                         <span class='node-body-titled-value'>
@@ -181,7 +243,7 @@
             margin-left: 10px;
         }
 
-        .connection
+        .node-socket
         {
             background: white;
             border-radius: 50%;
@@ -200,17 +262,17 @@
                         .02s ease top;
         }
 
-        .connection-left
+        .socket-left
         {
             left: calc(-8px / 2);
         }
 
-        .connection-right
+        .socket-right
         {
             right: calc(-8px / 2);
         }
 
-        .connection:hover
+        .node-socket:hover
         {
             width: 18px;
             height: 18px;
@@ -218,12 +280,12 @@
             top: calc(36px / 2 - 18px / 2);
         }
 
-        .connection-left:hover
+        .socket-left:hover
         {
             left: calc(-18px / 2);
         }
 
-        .connection-right:hover
+        .socket-right:hover
         {
             right: calc(-18px / 2);
         }
