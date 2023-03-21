@@ -4,3 +4,6 @@
 [submodule "ChRIS_ui"]
 	path = ChRIS_ui
 	url = https://github.com/IainWinter/ChRIS_ui
+[submodule "cutl"]
+	path = cutl
+	url = https://github.com/IainWinter/cutl
