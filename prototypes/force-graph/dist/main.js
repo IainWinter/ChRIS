@@ -37,6 +37,8 @@ class PluginTree {
         return this.nodes.get(0)[0];
     }
     getChildren(id) {
+        if (!this.nodes.has(id))
+            return [];
         return this.nodes.get(id);
     }
     addNode(node) {
@@ -56,6 +58,8 @@ class PluginTree {
 function loadTreeFromNetwork(tree, client, id, pid = 0, depth = 0) {
     return __awaiter(this, void 0, void 0, function* () {
         // load node data from network
+        // Use this is the future
+        // client.getFeed(id)).getPluginInstances();
         let inst = yield client.getPluginInstance(id);
         let children = yield inst.getDescendantPluginInstances();
         // add node to local tree
@@ -110,9 +114,12 @@ app.get("/get-nodes", (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
     }
     toJSON(tree, tree.root(), jsonObj);
-    console.log(JSON.stringify(jsonObj));
     res.send(jsonObj);
 }));
+app.get("/test", (req, res) => {
+    let options = { root: "static" };
+    res.sendFile("test.json", options);
+});
 app.listen(port, () => {
     auth();
     console.log(`Express is listening at http://localhost:${port}`);

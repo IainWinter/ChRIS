@@ -42,6 +42,9 @@ class PluginTree
 
 	getChildren(id: number): Array<PluginNode>
 	{
+		if (!this.nodes.has(id))
+			return [];
+
 		return this.nodes.get(id);
 	}
 
@@ -69,6 +72,9 @@ class PluginTree
 async function loadTreeFromNetwork(tree: PluginTree, client: Client, id: number, pid: number = 0, depth: number = 0)
 {
 	// load node data from network
+
+	// Use this is the future
+	// client.getFeed(id)).getPluginInstances();
 
 	let inst: PluginInstance = await client.getPluginInstance(id);
 	let children: PluginInstanceDescendantList = await inst.getDescendantPluginInstances();
@@ -148,8 +154,13 @@ app.get("/get-nodes", async (req, res) =>
 
 	toJSON(tree, tree.root(), jsonObj);
 
-	console.log(JSON.stringify(jsonObj));
 	res.send(jsonObj);
+});
+
+app.get("/test", (req, res) => 
+{
+    let options = { root: "static" };
+    res.sendFile("test.json", options);
 });
 
 app.listen(port, () => 
