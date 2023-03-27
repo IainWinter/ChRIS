@@ -1,0 +1,32 @@
+
+.dot {
+    position: relative;
+    cursor: pointer;
+    height: 25px;
+    width: 25px;
+    background-color:blueviolet;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    
+  }
+
+  .dot .data {
+    visibility: hidden;
+    position: absolute;
+    background-color: grey;
+    color: black;
+    text-align: center;
+    border-radius: 3px;
+    padding: 5px;
+    z-index: 1;
+    width: 160px;
+    margin-left: -80px;
+    bottom: 125%;
+    left: 50%;
+  }
+  
+  .dot .display {
+    visibility: visible;
+  }
+  
