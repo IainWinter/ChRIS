@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Test of Force Directed Graph</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+	</head>
+	<body>
+		<svg id="graph"></svg>
+
+		<div class="controls">
+			<h3>Controls</h3>
+			<br>
+			<div class="inline-setting">
+				<p>Show Names</p>
+				<input id="show-names-checkbox" type="checkbox" checked>
+			</div>
+		</div>
+	</body>
+
+	<script src="https://d3js.org/d3.v4.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+	<script>
+		let width, height;
+		let	color = d3.scaleOrdinal(d3.schemeCategory10);
+
+		// Create svg
+
+		let svg = d3.select("#graph");
+
+		let nodes = [];
+		let links = [];
+
+		// Convert a node in the larger json data structure into a single node
+		//
+		//	node -> a node object
+		//
+		function createNodeFromJSON(node)
+		{
+			return {
+				id: node.id, 
+				name: node.name
+			};
+		}
+
+		// Convert the json data structure into a flat list of nodes and links
+		//
+		//	children -> an array of node objects
+		//
+		function initNodesFromJSON(json)
+		{
+			// create & add root node
+
+			let root = createNodeFromJSON(json.children[0]);
+			nodes.push(root);
+
+			function addChildren(parent, json)
+			{
+				for (let nodeJSON of json.children)
+				{
+					let node = createNodeFromJSON(nodeJSON);
+					nodes.push(node);
+					links.push({
+						source: parent,
+						target: node
+					});
+
+					addChildren(node, nodeJSON);
+				}
+			}
+
+			addChildren(root, json.children[0]);
+		}
+	</script>
+
+	<script>
+		
+		d3.json("/test", function (treeData)
+		{
+			const g = d3.create("svg")
+				.attr("viewBox", [0, 100, 100, 100])
+				.style("font", "10px sans-serif")
+				.style("user-select", "none");
+
+
+
+			const treemap = d3.tree().size([height, width]);
+			let nodes = d3.hierarchy(treeData, d => d.children);
+			nodes = treemap(nodes);
+
+			const node = g.selectAll(".node")
+				.data(nodes.descendants())
+				.enter().append("g")
+					.attr("class", d => "node" + (d.children ? " node--internal" : " node--leaf"))
+					.attr("transform", d => "translate(" + d.y + "," + d.x + ")");
+
+
+			const link = g.selectAll(".link")
+				.data(nodes.descendants().slice(1))
+				.enter().append("path")
+					.attr("class", "link")
+					.style("stroke", d => d.data.level)
+					.attr("d", d => {
+						return "M" + d.y + "," + d.x
+							+ "C" + (d.y + d.parent.y) / 2 + "," + d.x
+							+ " " + (d.y + d.parent.y) / 2 + "," + d.parent.x
+							+ " " + d.parent.y + "," + d.parent.x;
+					});
+
+			node.append("circle")
+				.attr("r", d => d.data.value)
+				.style("stroke", d => d.data.type)
+				.style("fill", d => d.data.level);
+
+			node.append("text")
+				.attr("dy", ".35em")
+				.attr("x", d => d.children ? (d.data.value + 5) * -1 : d.data.value + 5)
+				.attr("y", d => d.children && d.depth !== 0 ? -(d.data.value + 5) : d)
+				.style("text-anchor", d => d.children ? "end" : "start")
+				.text(d => d.data.name);
+
+			
+		});
+
+	</script>
+
+	<style>
+
+		html, body
+		{
+			font-family: Arial;
+			margin: 0;
+			overflow: hidden;
+			display: flex;
+		}
+
+		p, h1, h2, h3
+		{
+			margin: 0;
+		}
+
+		.link
+		{
+			stroke: black;
+		}
+
+		#graph
+		{
+			width: 100vw;
+			height: 100vh;
+		}
+
+		.node-title 
+		{
+			user-select: none;
+			-webkit-user-select: none;
+			pointer-events: none;
+			cursor: default;
+			z-index: 10000;
+		}
+
+		.controls
+		{
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			width: 300px;
+			height: 100px;
+			background: rgba(0, 0, 0, .1);
+			padding: 15px;
+			border-radius: 0 10px 0 0;
+
+			backdrop-filter: blur(5px);
+			-webkit-backdrop-filter: blur(5px);
+		}
+
+		.inline-setting
+		{
+			display: flex;
+			justify-content: space-between;
+		}
+
+		.inline-setting > *
+		{
+			margin: auto 0;
+		}
+
+	</style>
+</html>

@@ -1,1 +1,3 @@
-*.DS_STORE
+*.DS_Store
+*/node_modules
+prototypes/force-graph/node_modules

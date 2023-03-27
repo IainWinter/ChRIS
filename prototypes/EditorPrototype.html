@@ -6,9 +6,6 @@
         <div id="canvas">
 
             <svg id="svg-canvas">
-                <g>
-                    <line x1="100px" y1="100px" x1="100px" xy="100px" stroke="black"></line>
-                </g>
             </svg>
 
         </div>
@@ -35,6 +32,9 @@
         //      reset active
         // If line
         //  connect end to target, or reset begin socket
+
+        // use this for connections
+		// https://svgjs.dev/svg.draw.js/demo/index.html
 
         class ClickState
         {
@@ -64,15 +64,18 @@
 
                 if (nodeDOM.classList.contains("node-socket"))    // If clicked on a node socket
                 {
+					let socketRect = nodeDOM.getBoundingClientRect();
                     let lineDOM = document.createElement("line");
 
-                    lineDOM.setAttribute("x1", 10);
-                    lineDOM.setAttribute("y1", 10);
-                    lineDOM.setAttribute("x2", 100);
-                    lineDOM.setAttribute("y2", 100);
+                    lineDOM.setAttribute("x1", `${socketRect.x}px`);
+                    lineDOM.setAttribute("y1", `${socketRect.y}px`);
+                    lineDOM.setAttribute("x2", "100px");
+                    lineDOM.setAttribute("y2", "100px");
+					lineDOM.setAttribute("stroke", "white");
 
-                    document.getElementById("svg-canvas").appendChild(lineDOM);
-
+                    lineDOM = document.getElementById("svg-canvas").appendChild(lineDOM);
+					document.getElementById("canvas").innerHTML += "";
+					
                     this.activeSocket = nodeDOM;
                     this.activeLine = lineDOM;
                 }
@@ -89,16 +92,29 @@
             {
                 if (this.activeSocket !== null)
                 {
-                    
-                    return;
+                    this.dragActiveLine(e);
                 }
 
-                if (this.activeNode === null) // exit if not selected
-                    return;
+				else
+                if (this.activeNode !== null) // exit if not selected
+				{
+					this.dragActiveNode(e);					
+				}
+            }
 
+			dragActiveLine = function (e)
+			{
+				console.log(this.activeLine.getAttribute("x2"));
+
+				this.activeLine.setAttribute("x2", `${e.pageX}px`);
+				this.activeLine.setAttribute("y2", `${e.pageY}px`);
+			}
+
+			dragActiveNode = function (e)
+			{
                 this.activeNode.style.left = `${e.pageX - this.activeNodeClickOffseX}px`;
                 this.activeNode.style.top = `${e.pageY - this.activeNodeClickOffseY}px`;
-            }
+			}
         }
 
         let clickState = new ClickState();
@@ -148,14 +164,14 @@
             nodeDOM.classList = ["node"];
             nodeDOM.style.left = '100px';
             nodeDOM.style.top = '100px';
-            nodeDOM.addEventListener("mousedown", onNodeClick);
-            nodeDOM.addEventListener("mouseup", onNodeRelease);
 
             document.getElementById("canvas").append(nodeDOM);
         }
 
         createNode("test", 0, 0);
 
+		document.addEventListener("mousedown", onNodeClick);
+        document.addEventListener("mouseup", onNodeRelease);
         document.addEventListener("mousemove", onMouseDrag);
 
         document.getElementById("create-node-button")
@@ -170,10 +186,19 @@
         html, body
         {
             margin: 0;
+			background: black;
         }
 
         #canvas
         {
+        	width: 100%;
+        	height: 100%;
+        }
+
+        #svg-canvas
+        {
+        	width: 100%;
+        	height: 100%;
         }
 
         .node
