@@ -30,8 +30,28 @@
 				width  = 660 - margin.left - margin.right,
 				height = 1500 - margin.top - margin.bottom;
 
+
+			let nodeCounts = [];
+			function countNodes(depth, node)
+			{
+				if (depth >= nodeCounts.length)
+					nodeCounts.push(0);
+
+				nodeCounts[depth] += 1;
+
+				for (let n of node.children)
+				{
+					countNodes(depth + 1, n);
+				}
+			}
+
+			countNodes(0, treeData);
+
+			let newHeight = nodeCounts[nodeCounts.length - 1] * 100;
+			let newWidth = nodeCounts.length * 150;
+
 			// declares a tree layout and assigns the size
-			const tree = d3.tree().size([height, width]);
+			const tree = d3.tree().size([newHeight, newWidth]);
 
 			//  assigns the data to a hierarchy using parent-child relationships
 			let nodes = d3.hierarchy(treeData, d => d.children);
@@ -73,7 +93,14 @@
 			
 			// adds the text to the node
 			node.append("text")
+				.attr("dx", "1em")
+				.attr("dy", ".25em")
 				.text(d => d.data.name);
+
+			svg.call(d3.zoom().on("zoom", function ()
+			{
+				g.attr("transform", d3.event.transform)
+			}))
 		});
 	</script>
 
@@ -94,7 +121,7 @@
 
 		.link
 		{
-			stroke: black;
+			stroke: rgba(0, 0, 0, .15);
 			fill: none;
 		}
 
