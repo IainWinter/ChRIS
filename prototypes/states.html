@@ -1,0 +1,102 @@
+<html>
+    <body>
+        <div class="card idle">
+        </div>
+        <div class="card working">
+        </div>
+        <div class="card finished">
+        </div>
+        <div class="card error">
+        </div>
+
+    </body>
+
+    <style>
+
+        html, body
+        {
+            display: flex;
+            margin: 0;
+            width: 100%;
+        }
+
+
+        .card 
+        {
+            margin: auto;
+            width: 100px;
+            height: 100px;
+            background: grey;
+            position: relative;
+            border-radius: 100%;
+
+        }
+
+        .card::after
+        {
+            position: absolute;
+            bottom: -20px;
+            right: 5px;
+        }
+
+        .idle
+        {
+            border: 5px solid blue;
+        }
+        .idle::after
+        {
+            content: "status: idle";
+        }
+
+        .working
+        {
+            border: 5px solid orange;
+            animation: effect_working 5s infinite;
+        }
+        .working::after
+        {
+            content: "status: working";
+        } 
+
+        .finished
+        {
+            border: 5px solid green;
+            animation: effect_finished 5s infinite;
+        }
+        .finished::after
+        {
+            content: "status: finished";
+        }
+        .error
+        {
+            border: 5px solid red;
+        }
+        .error::after
+        {
+            content: "status: error";
+        }
+
+		@keyframes effect_working {
+  			0% {
+    			background: grey;
+  		}
+  			50% {
+   				background: orange;
+  		}
+  			100% {
+    			background: grey;
+  		}
+
+  		@keyframes effect_finished {
+  			0% {
+    			background: grey;
+  		}
+  			50% {
+   				background: green;
+  		}
+  			100% {
+    			background: grey;
+  		}
+
+    </style>
+</html>
