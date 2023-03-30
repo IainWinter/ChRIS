@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>SVG Line Editor</title>
+    <style>
+      #svg-container {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="svg-container">
+      <svg id="svg" viewBox="0 0 500 500">
+        <line id="line" x1="50" y1="50" x2="200" y2="200" stroke="black" stroke-width="2" />
+      </svg>
+    </div>
+    <script>
+      // Get the SVG line element
+      const line = document.getElementById('line');
+
+      // Add an event listener to the SVG container to detect mouse movement
+      document.getElementById('svg-container').addEventListener('mousemove', function(e) {
+        // Calculate the new x2 value based on the mouse position
+        const new_x2 = e.clientX - this.getBoundingClientRect().left;
+
+        // Update the x2 attribute of the SVG line element
+        line.setAttribute('x2', new_x2);
+      });
+    </script>
+  </body>
+</html>

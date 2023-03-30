@@ -120,12 +120,6 @@ function auth()
 		});
 }
 
-app.get("/", (req, res) => 
-{
-    let options = { root: "static" };
-    res.sendFile("ForceGraphPrototype.html", options);
-});
-
 app.get("/get-nodes", async (req, res) => 
 {
 	let id: string = req.query.id as string;
@@ -161,6 +155,24 @@ app.get("/test", (req, res) =>
 {
     let options = { root: "static" };
     res.sendFile("test.json", options);
+});
+
+app.get("/static", (req, res) => 
+{
+    let options = { root: "static" };
+    res.sendFile("StaticGraph.html", options);
+});
+
+app.get("/force", (req, res) => 
+{
+    let options = { root: "static" };
+    res.sendFile("ForceGraph.html", options);
+});
+
+app.get("/editor", (req, res) => 
+{
+    let options = { root: "static" };
+    res.sendFile("Editor.html", options);
 });
 
 app.listen(port, () => 

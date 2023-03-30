@@ -91,10 +91,6 @@ function auth() {
         console.log(error);
     });
 }
-app.get("/", (req, res) => {
-    let options = { root: "static" };
-    res.sendFile("ForceGraphPrototype.html", options);
-});
 app.get("/get-nodes", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let id = req.query.id;
     let tree = yield getTree(Number.parseInt(id));
@@ -119,6 +115,18 @@ app.get("/get-nodes", (req, res) => __awaiter(void 0, void 0, void 0, function* 
 app.get("/test", (req, res) => {
     let options = { root: "static" };
     res.sendFile("test.json", options);
+});
+app.get("/static", (req, res) => {
+    let options = { root: "static" };
+    res.sendFile("StaticGraph.html", options);
+});
+app.get("/force", (req, res) => {
+    let options = { root: "static" };
+    res.sendFile("ForceGraph.html", options);
+});
+app.get("/editor", (req, res) => {
+    let options = { root: "static" };
+    res.sendFile("Editor.html", options);
 });
 app.listen(port, () => {
     auth();
