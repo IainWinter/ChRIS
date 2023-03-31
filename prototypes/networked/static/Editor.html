@@ -9,6 +9,11 @@
 
         <div id="canvas">
             <svg id="svg-canvas">
+                <defs>
+                    <marker id='head' orient="auto"  markerWidth='3' markerHeight='4' refX='0.1' refY='2'>
+                      <path d='M0,0 V4 L2,2 Z' fill="white" />
+                    </marker>
+                  </defs>
             </svg>
         </div>
     </body>
@@ -74,12 +79,38 @@
 				this.view = undefined;
 			}
 
+            //  Iterate all nodes down the pipeline and check for loops.
+            //  Returns a list of invalid NodeConnections
+            //
+            findInvalidConnections = function(out = [], nodeStack = [])
+            {
+                nodeStack.push(this);
+
+                for (let c of this.outgoing)
+                {
+                    if (nodeStack.indexOf(c.end) != -1)
+                        out.push(c);
+                    else
+                        c.end.findInvalidConnections(out, nodeStack);
+                }
+
+                return out;
+            }
+
 			// Test if a adding a connection would cause a loop
 			//
-			isConnectionValid = function(otherNode)
+			isConnectionValid = function(targetNode)
 			{
-				if (this === otherNode) // cant connect to self
+				if (this === targetNode) // cant connect to self
 					return false;
+
+                for (let c of targetNode.outgoing)
+                {
+                    if (c.end === this)
+                        return false;
+
+                    c.start.isConnectionValid(this);
+                }
 
 				return true;
 
@@ -89,13 +120,15 @@
 
 			//	Add a connection to Node:otherNode
 			//
-			connect = function(otherNode, lineDOM)
+			connect = function(otherNode, lineId)
 			{
 				// add error catching
 
-				let connection = new NodeConnection(this, otherNode, lineDOM);
+				let connection = new NodeConnection(this, otherNode, lineId);
 				this.outgoing.push(connection);
 				otherNode.incoming.push(connection);
+
+                globalLinkedConnectionDOMs.set(lineId, connection);
 			}
 
 			//	Remove the connection to Node:otherNode if it exists
@@ -171,6 +204,16 @@
 			}
 		}
 
+        function refreshInvalidConnections(originNode)
+        {
+            for (let c of document.getElementsByClassName("node-line"))   // reset all lines
+                c.classList = "node-line";
+
+            // set invalid connections
+            for (let c of originNode.findInvalidConnections())
+                document.getElementById(c.view).classList += " node-line-invalid";
+        }
+
         class ClickState
         {
             constructor()
@@ -192,11 +235,24 @@
 
                 let clickedNodeSocket = mouseTarget.classList.contains("node-socket");
 
+                let clickedLine = mouseTarget.classList.contains("node-line");
+
                 if (clickedNodeHeader || clickedNodeSocket) // Set active node if one has been clicked
                 {
                     this.activeNode = mouseTarget.closest(".node");
                     this.activeNodeClickOffseX = offsetX;
                     this.activeNodeClickOffseY = offsetY;
+                }
+
+                if (clickedLine)
+                {
+                    // remove connection
+
+                    let connection = globalLinkedConnectionDOMs.get(mouseTarget.id);
+                    connection.start.disconnect(connection.end);
+                    mouseTarget.remove();
+
+                    refreshInvalidConnections(connection.start);
                 }
 
                 if (clickedNodeSocket) // Add wire to active node
@@ -208,7 +264,9 @@
                     lineDOM.setAttribute("y1", `${socketRect.y}px`);
                     lineDOM.setAttribute("x2", `${socketRect.x}px`);
                     lineDOM.setAttribute("y2", `${socketRect.y}px`);
-					lineDOM.setAttribute("stroke", "white");
+                    lineDOM.setAttribute("marker-end", "url(#head)");
+
+                    lineDOM.classList = "node-line";
 
 					let lineID = `line-${this.lineId++}`;
 					lineDOM.id = lineID;
@@ -238,17 +296,22 @@
 					let originNode = globalNodeState.get(activeNode.id);
 					let targetNode = globalNodeState.get(targetNodeDOM.id);
 
+                    if (originNode == targetNode)
+                        return false;
+
 					// connections are created from left to right
 					// so if we are dropping onto the right socket, we must be dragging a line backwards
 					// swap the nodes 
-
-					if (overRightSocket)
+					
+                    if (overRightSocket)
 						[originNode, targetNode] = [targetNode, originNode];
 
 					if (!originNode.isConnectionValid(targetNode)) // exit on invalid connection
-						return false;
+					return false;
 
 					originNode.connect(targetNode, activeLine.id);
+
+                    refreshInvalidConnections(originNode);
 
 					return true;
 				}
@@ -272,6 +335,8 @@
 
             drag = function (e)
             {
+                e.preventDefault();
+
                 if (this.activeSocket !== null)
                 {
                     this.dragActiveLine(e);
@@ -299,30 +364,26 @@
 
 				// loop over connections
 
-				function moveLineIncomming(activeNode, lineID)
+				function moveLine(connection)
 				{
 					// move the x2 and y2 positions to match the left socket position
 
-					let lineDOM = document.getElementById(lineID);
+					let lineDOM = document.getElementById(connection.view);
 
-					let socketRect = activeNode.querySelector(".socket-left").getBoundingClientRect();
-                    lineDOM.setAttribute("x2", `${socketRect.x}px`);
-                    lineDOM.setAttribute("y2", `${socketRect.y}px`);
+                    let nodeBeginDOM = document.getElementById(connection.start.view);
+                    let nodeEndDOM = document.getElementById(connection.end.view);
+
+                    let socketRect1 = nodeBeginDOM.querySelector(".socket-right").getBoundingClientRect();
+                    lineDOM.setAttribute("x1", `${socketRect1.x}px`);
+                    lineDOM.setAttribute("y1", `${socketRect1.y}px`);
+
+					let socketRect2 = nodeEndDOM.querySelector(".socket-left").getBoundingClientRect();
+                    lineDOM.setAttribute("x2", `${socketRect2.x}px`);
+                    lineDOM.setAttribute("y2", `${socketRect2.y}px`);
 				}
 
-				function moveLineOutgoing(activeNode, lineID)
-				{
-					// move the x1 and y1 positions to match the right socket position
-
-					let lineDOM = document.getElementById(lineID);
-
-					let socketRect = activeNode.querySelector(".socket-right").getBoundingClientRect();
-                    lineDOM.setAttribute("x1", `${socketRect.x}px`);
-                    lineDOM.setAttribute("y1", `${socketRect.y}px`);
-				}
-
-				for (let connection of node.incoming) moveLineIncomming(this.activeNode, connection.view);
-				for (let connection of node.outgoing) moveLineOutgoing(this.activeNode, connection.view);
+				for (let connection of node.incoming) moveLine(this.activeNode, connection);
+				for (let connection of node.outgoing) moveLine(this.activeNode, connection);
 			}
         }
 
@@ -452,6 +513,9 @@
                         .02s ease left, 
                         .02s ease right, 
                         .02s ease top;
+
+            
+            user-select: none;
         }
 
         .socket-left
@@ -480,6 +544,22 @@
         .socket-right:hover
         {
             right: calc(-18px / 2);
+        }
+
+        .node-line
+        {
+            stroke: white;
+            stroke-width: 4px;
+        }
+
+        .node-line:hover
+        {
+            stroke-width: 8px;
+        }
+
+        .node-line-invalid
+        {
+            stroke: red;
         }
 
         .node-exmaple-1
