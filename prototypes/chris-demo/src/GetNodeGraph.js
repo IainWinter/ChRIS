@@ -10,24 +10,11 @@ let g_client = null;
 export let g_nodes = [];
 export let g_edges = [];
 
-function reportNode(node, connection)
+export async function setFeedGraph(pluginId)
 {
-	g_nodes.push({
-		id: `${node.id}`,
-		type: 'plugininst',
-		position: { x: 250, y: 0 }
-	});
-
-	for (let child of node.children)
-	{
-		g_edges.push({
-			id: `e${node.id}-${child}`,
-			source: `${node.id}`,
-			target: `${child}`,
-		});
-	}
-
-	console.log("Loaded node %s (%d)", node.name, node.id);
+	g_nodes = [];
+	g_edges = [];
+	await getFeedPluginInstanceGraph(pluginId);
 }
 
 export function getChRISClientConnection()
@@ -46,6 +33,24 @@ export function getChRISClientConnection()
 		});
 }
 
+async function getParameters(pinst)
+{
+	let instParameters = await pinst.getParameters();
+	let options = [];
+
+	if (instParameters.data)
+	for (let param of instParameters.data)
+	{
+		options.push({
+			name: param.param_name,
+			value: param.value,
+			type: param.type,
+		});
+	}
+
+	return options;
+}
+
 export async function getFeedPluginInstanceGraph(pluginId)
 {
 	let inst = await g_client.getPluginInstance(pluginId);
@@ -54,32 +59,33 @@ export async function getFeedPluginInstanceGraph(pluginId)
 	let x = 0;
 	let y = 0;
 
+	let initialStartTime = Date.parse(inst.data.start_date);
+
 	for (let node of tree.data)
 	{
 		let id = node.id;
 		let pid = node.previous_id;
 
+		let nodeStartTime = Date.parse(node.start_date);
+		let nodeEndTime = Date.parse(node.end_date);
+
 		// get nodes from https://cube.chrisproject.org/api/v1/plugins/instances/9452/parameters/
 
 		let pinst = inst.data.id === id ? inst : await g_client.getPluginInstance(id);
-		let instParameters = await pinst.getParameters();
-		let options = [];
-
-		for (let param of instParameters.data)
-		{
-			options.push({
-				name: param.param_name,
-				value: param.value,
-				type: param.type
-			});
-		}
+		let options = await getParameters(pinst);
 
 		g_nodes.push({
 			id: `${id}`,
 			type: 'plugininst',
 			data: {
 				title: node.plugin_name,
-				options: options
+				options: options,
+				status: node.status,
+				id: id,
+
+				time_offset_ms: nodeEndTime - initialStartTime,
+
+				thumb_url: "./uv.png"
 			},
 			position: { x: x, y: y }
 		});
@@ -95,4 +101,7 @@ export async function getFeedPluginInstanceGraph(pluginId)
 			});
 		}
 	}
+
+	console.log(g_nodes);
+	console.log(g_edges);
 }

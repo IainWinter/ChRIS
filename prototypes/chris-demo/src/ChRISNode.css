@@ -1,15 +1,20 @@
 .chris-plugin-instance-node {
-	background: rgb(58, 75, 97); 
+	background-color: #333;
 	border-radius: 5px;
 	color: white;
 
-	font-family: 'Trebuchet MS', sans-serif;
+	font-family: sans-serif;
+	position: relative;
+
+	min-width: 100px;
 }
 
 .chris-plugin-instance-node-header {
-	background: rgb(73, 130, 203);
-	padding: 5px 10px;
+	background-color: #608090;
+	padding: 3px 10px;
 	border-radius: 5px 5px 0px 0px;
+
+	font-size: 12px;
 
 	position: relative;
 }
@@ -21,15 +26,17 @@
 .chris-plugin-instance-node-body {
 	display: flex;
 	flex-direction: column;
-	padding: 7px 10px 0px 10px;
+	padding: 7px 10px 7px 10px;
 }
 
-.chris-plugin-instance-node-input-label {
-	font-size: 12px;
+.hide-body .chris-plugin-instance-node-body {
+	display: none;
+	width: 200px;
 }
 
-.chris-plugin-instance-node-input {
-	margin-bottom: 10px;
+.chris-plugin-instance-node-input:focus-visible {
+	outline: none;
+	border-bottom: 1px solid white;
 }
   
 .react-flow__node-plugininst .react-flow__handle {
@@ -37,4 +44,104 @@
 	height: 10px;
 	border-radius: 2px;
 	background-color: #778899;
+}
+
+
+.chris-plugin-instance-node-id {
+	font-size: 10px;
+	margin: 0;
+	text-align: right;
+}
+
+/*
+
+	Status effects
+
+*/
+
+.chris-plugin-instance-node[status="finishedSuccessfully"] {
+	/* box-shadow: 0px 0px 5px 0px green; */
+}
+
+.chris-plugin-instance-node[status="finishedSuccessfully"]:after {
+	content: "Finished";
+	position: absolute;
+	bottom: -1.4em;
+	right: 0;
+	color: black;
+
+	font-size: 12px;
+}
+
+.chris-plugin-instance-node[status="finishedWithError"] .chris-plugin-instance-node-header{
+	background-color: rgb(255, 44, 44);
+}
+
+.chris-plugin-instance-node[status="finishedWithError"]:after {
+	content: "Finished with Error";
+	position: absolute;
+	bottom: -1.4em;
+	right: 0;
+	color: black;
+
+	font-size: 12px;
+}
+
+.chris-plugin-instance-node[status="cancelled"] .chris-plugin-instance-node-header{
+	background-color: rgb(137, 137, 141);
+}
+
+.chris-plugin-instance-node[status="cancelled"]:after {
+	content: "Cancelled";
+	position: absolute;
+	bottom: -1.4em;
+	right: 0;
+	color: black;
+
+	font-size: 12px;
+}
+
+/*
+
+	Yesh Styles
+
+*/
+
+.chris-plugin-instance-node-inline-input {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	padding-bottom: 2px;
+}
+
+.chris-plugin-instance-node-input-label {
+	font-size: 12px;
+}
+
+.chris-plugin-instance-node-inline-input > * {
+	margin: auto 0;
+	font-size: 12px;
+}
+
+/* edit here  */
+
+.chris-plugin-instance-node-input {
+	background: rgba(255, 255, 255, .2);
+	border: none;
+	border-bottom: 1px solid rgba(255, 255, 255, .3);
+
+	color: white;
+	margin-left: 5px;
+}
+
+.chris-plugin-instance-node-input[type="text"] {
+
+}
+
+.chris-plugin-instance-node-input[type="checkbox"] {
+
+}
+
+.chris-plugin-instance-node-input[type="number"] {
+
 }

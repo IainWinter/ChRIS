@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import ReactFlow, {
   addEdge,
   Controls,
@@ -6,14 +6,9 @@ import ReactFlow, {
   useEdgesState,
 } from 'reactflow';
 
-//import { nodes as initialNodes, edges as initialEdges } from './initial-elements';
 import ChRISNode from './ChRISNode';
-
+import { g_nodes, g_edges, setFeedGraph } from './GetNodeGraph'
 import 'reactflow/dist/style.css';
-//import './overview.css';
-
-import { g_nodes, g_edges } from './GetNodeGraph'
-//import { test_nodes, test_edges } from './test-nodes'
 
 const nodeTypes = {
   plugininst: ChRISNode
@@ -24,6 +19,19 @@ const OverviewFlow = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(g_edges);
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
 
+  async function submitForm(e)
+  {
+    e.preventDefault();
+
+    let value = parseInt(e.target.nodeId.value);
+    await setFeedGraph(value);
+
+    setNodes(g_nodes);
+    setNodes(g_edges);
+
+    onNodesChange();
+  }
+
   return (
     <ReactFlow
       nodes={nodes}
@@ -33,7 +41,16 @@ const OverviewFlow = () => {
       onConnect={onConnect}
       nodeTypes={nodeTypes}
     >
-      <Controls />
+
+
+  {/* <div className="chris-controls">
+      <form onSubmit={(e) => submitForm(e)}>
+        <input type="number" name='nodeId'></input>
+        <button type='submit'>Submit</button>
+      </form>
+    </div> */}
+
+      <Controls position='top-left' />
     </ReactFlow>
   );
 };

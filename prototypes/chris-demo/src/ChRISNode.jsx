@@ -5,18 +5,27 @@ import './ChRISNode.css';
 
 function ChRISNode({ id, data }) 
 {
-
 	let title = data.title;
 	if (!title || title.length === 0)
 	{
 		title = "unset title";
 	}
 
+	let nodeId = "node" + data.id;
+
+	function toggleHideBody()
+	{
+		document.getElementById(nodeId).classList.toggle("hide-body");
+	}
+
 	return (<>
-		<div className='chris-plugin-instance-node'>
+		<div id={nodeId} className='chris-plugin-instance-node' status={data.status}>
+			<img src={data.thumb_url}></img>
 			<div className='chris-plugin-instance-node-header'>
 				<p className='chris-plugin-instance-node-header-title'>{title}</p>
 				
+				<button onClick={toggleHideBody}>^</button>
+
 				<Handle type="target" position={Position.Left} />
 				<Handle type="source" position={Position.Right} />
 			</div>
@@ -25,10 +34,15 @@ function ChRISNode({ id, data })
 				{data.options.map((option) => 
 				{
 					return (<>
-						<label className='chris-plugin-instance-node-input-label' htmlFor={option.name}>{option.name}</label>
-						<input className='chris-plugin-instance-node-input' type="text" name={option.name} value={option.value}></input>
+						<span className='chris-plugin-instance-node-inline-input'>
+							<label className='chris-plugin-instance-node-input-label' htmlFor={option.name}>{option.name}</label>
+							<input className='chris-plugin-instance-node-input' type="text" name={option.name} value={option.value}></input>
+						</span>
 					</>);
 				})}
+
+				<p className='chris-plugin-instance-node-id'>{data.id}</p>
+				<p className='chris-plugin-instance-node-id'>{data.time_offset_ms}</p>
 			</div>
 		</div>
 	</>);
