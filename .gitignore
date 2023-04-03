@@ -1,4 +1,5 @@
 *.DS_Store
 */node_modules
 prototypes/networked/node_modules
+prototypes/chris-demo/node_modules
 prototypes/networked/dist

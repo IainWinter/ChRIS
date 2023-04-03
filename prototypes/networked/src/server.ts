@@ -74,7 +74,8 @@ async function loadTreeFromNetwork(tree: PluginTree, client: Client, id: number,
 	// load node data from network
 
 	// Use this is the future
-	// client.getFeed(id)).getPluginInstances();
+	// let test = await client.getFeed(id);
+	// let insts = await test.getPluginInstances();
 
 	let inst: PluginInstance = await client.getPluginInstance(id);
 	let children: PluginInstanceDescendantList = await inst.getDescendantPluginInstances();

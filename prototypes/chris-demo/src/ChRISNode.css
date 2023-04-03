@@ -1,0 +1,40 @@
+.chris-plugin-instance-node {
+	background: rgb(58, 75, 97); 
+	border-radius: 5px;
+	color: white;
+
+	font-family: 'Trebuchet MS', sans-serif;
+}
+
+.chris-plugin-instance-node-header {
+	background: rgb(73, 130, 203);
+	padding: 5px 10px;
+	border-radius: 5px 5px 0px 0px;
+
+	position: relative;
+}
+
+.chris-plugin-instance-node-header-title {
+	margin: 0;
+}
+
+.chris-plugin-instance-node-body {
+	display: flex;
+	flex-direction: column;
+	padding: 7px 10px 0px 10px;
+}
+
+.chris-plugin-instance-node-input-label {
+	font-size: 12px;
+}
+
+.chris-plugin-instance-node-input {
+	margin-bottom: 10px;
+}
+  
+.react-flow__node-plugininst .react-flow__handle {
+	width: 6px;
+	height: 10px;
+	border-radius: 2px;
+	background-color: #778899;
+}
