@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npx tsc",
-    "start": "npx tsc & node dist/main.js"
+    "build": "npx tsc --jsx react",
+    "start": "npx tsc --jsx react & node dist/server.js"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +17,8 @@
   "dependencies": {
     "@fnndsc/chrisapi": "^1.12.0",
     "chris-utility": "^1.1.6",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }
