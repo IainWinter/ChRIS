@@ -125,23 +125,71 @@
 
 /* edit here  */
 
-.chris-plugin-instance-node-input {
+/* .chris-plugin-instance-node-input {
 	background: rgba(255, 255, 255, .2);
 	border: none;
 	border-bottom: 1px solid rgba(255, 255, 255, .3);
 
 	color: white;
 	margin-left: 5px;
-}
+} */
 
 .chris-plugin-instance-node-input[type="text"] {
-
-}
-
-.chris-plugin-instance-node-input[type="checkbox"] {
-
-}
-
-.chris-plugin-instance-node-input[type="number"] {
-
-}
+	background: #afe2eb;
+	height: 30px;
+	font-size: 10px;
+	border-radius: 5px;
+	box-shadow: inset 4px 4px 4px rgb(58, 140, 145), inset -4px -4px 4px white;
+	caret-color: black;
+	width: 100%;
+	border: none;
+	outline: none;
+	font-family: Verdana;
+  }
+  
+  .chris-plugin-instance-node-input-label {
+	margin-bottom: 4px;
+	display: block;
+	width: 100%;
+	padding: 0;
+	border: none;
+	outline: none;
+	box-sizing: border-box;
+	color: black;
+	font-family: Verdana;
+  }
+  
+  .chris-plugin-instance-node-input-label::nth-of-type(2) {
+	margin-top: 12px;
+  }
+  
+  .chris-plugin-instance-node-input::placeholder {
+	color: black;
+  }
+  
+  .chris-plugin-instance-node-body {
+	background: #afe2eb;
+  }
+  
+  .chris-plugin-instance-node-input[type="checkbox"][value="true"] {
+	height: 25px;
+	width: 25px;
+	accent-color: green;
+  }
+  .chris-plugin-instance-node-input[type="checkbox"][value="false"] {
+	height: 25px;
+	width: 25px;
+	accent-color: red;
+  }
+  
+  .chris-plugin-instance-node-input[type="number"] {
+	background: #b3dbf8;
+	height: 30px;
+	font-size: 10px;
+	border-radius: 10px;
+	box-shadow: inset 6px 6px 6px #cbced1, inset -6px -6px 6px white;
+	caret-color: black;
+	width: 30%;
+	border: none;
+	outline: none;
+  }
