@@ -1,5 +1,4 @@
 .chris-plugin-instance-node {
-	background-color: #333;
 	border-radius: 5px;
 	color: white;
 
@@ -10,33 +9,52 @@
 }
 
 .chris-plugin-instance-node-header {
-	background-color: #608090;
+	background-color: rgb(0, 102, 204);
 	padding: 3px 10px;
 	border-radius: 5px 5px 0px 0px;
 
 	font-size: 12px;
 
 	position: relative;
+
+	display: flex;
+	justify-content: space-between;
 }
 
 .chris-plugin-instance-node-header-title {
 	margin: 0;
 }
 
+.chris-plugin-instance-hide-body-button {
+	background: none;
+	outline: none;
+	border: none;
+	color: white;
+	margin: auto 0 auto 20px;
+}
+
+.chris-plugin-instance-hide-body-button:hover {
+	cursor: pointer;
+}
+
 .chris-plugin-instance-node-body {
 	display: flex;
 	flex-direction: column;
 	padding: 7px 10px 7px 10px;
+
+	background: linear-gradient(140deg, rgba(0, 102, 204, .63) 0%, rgba(95, 101, 128, .66) 100%);
+	/* backdrop-filter: blur(1px); */
+	backface-visibility: hidden;
+	border-radius: 0 0 5px 5px;
+}
+
+.hide-body .chris-plugin-instance-node-header {
+	border-radius: 5px;;
 }
 
 .hide-body .chris-plugin-instance-node-body {
 	display: none;
 	width: 200px;
-}
-
-.chris-plugin-instance-node-input:focus-visible {
-	outline: none;
-	border-bottom: 1px solid white;
 }
   
 .react-flow__node-plugininst .react-flow__handle {
@@ -45,7 +63,6 @@
 	border-radius: 2px;
 	background-color: #778899;
 }
-
 
 .chris-plugin-instance-node-id {
 	font-size: 10px;
@@ -135,16 +152,15 @@
 } */
 
 .chris-plugin-instance-node-input[type="text"] {
-	background: #afe2eb;
-	height: 30px;
-	font-size: 10px;
+	background: none;
+	font-size: 1em;
+	line-height: 1.5em;
 	border-radius: 5px;
-	box-shadow: inset 4px 4px 4px rgb(58, 140, 145), inset -4px -4px 4px white;
+	box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.24), inset -1px -1px 3px rgba(255, 255, 255, 0.54);
 	caret-color: black;
 	width: 100%;
 	border: none;
 	outline: none;
-	font-family: Verdana;
   }
   
   .chris-plugin-instance-node-input-label {
@@ -165,10 +181,6 @@
   
   .chris-plugin-instance-node-input::placeholder {
 	color: black;
-  }
-  
-  .chris-plugin-instance-node-body {
-	background: #afe2eb;
   }
   
   .chris-plugin-instance-node-input[type="checkbox"][value="true"] {

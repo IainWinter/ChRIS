@@ -2,6 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import ReactFlow, {
   addEdge,
   Controls,
+  Background,
   useNodesState,
   useEdgesState,
 } from 'reactflow';
@@ -42,6 +43,7 @@ const OverviewFlow = () => {
       nodeTypes={nodeTypes}
     >
       <Controls position='top-left' />
+	  <Background color="#333" variant="dots" />
     </ReactFlow>
   );
 };

@@ -24,7 +24,7 @@ function ChRISNode({ id, data })
 			<div className='chris-plugin-instance-node-header'>
 				<p className='chris-plugin-instance-node-header-title'>{title}</p>
 				
-				<button onClick={toggleHideBody}>^</button>
+				<p className='chris-plugin-instance-hide-body-button' onClick={toggleHideBody}>&and;</p>
 
 				<Handle type="target" position={Position.Left} />
 				<Handle type="source" position={Position.Right} />

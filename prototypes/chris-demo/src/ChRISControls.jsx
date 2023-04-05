@@ -17,6 +17,12 @@ function stopReplay()
   {
     clearTimeout(func);
   }
+  g_replayTimeouts = [];
+
+  for (let node of g_nodes)
+  {
+	document.getElementById(`node${node.id}`).classList.remove("working");
+  }
 }
 
 function startReplay()
@@ -27,7 +33,7 @@ function startReplay()
     return;
   }
 
-  document.getElementById("chris-control-replay").innerHTML = "&#23F8;";
+  document.getElementById("chris-control-replay").innerHTML = "&#9632;";
 
   let maxTimeout = 0;
   for (let node of g_nodes)
