@@ -18,6 +18,9 @@ function ChRISNode({ id, data })
 		document.getElementById(nodeId).classList.toggle("hide-body");
 	}
 
+	let timeStartSeconds = data.time_start_ms / 1000;
+	let timeEndSeconds = (data.time_end_ms - data.time_start_ms) / 1000;
+
 	return (<>
 		<div id={nodeId} className='chris-plugin-instance-node' status={data.status}>
 			{/* <img src={data.thumb_url}></img> */}
@@ -41,8 +44,9 @@ function ChRISNode({ id, data })
 					</>);
 				})}
 
-				<p className='chris-plugin-instance-node-id'>{data.id}</p>
-				<p className='chris-plugin-instance-node-id'>{data.time_end_ms}</p>
+				<p className='chris-plugin-instance-node-id'>Id: {data.id}</p>
+				<p className='chris-plugin-instance-node-id'>Time start: {timeStartSeconds}</p>
+				<p className='chris-plugin-instance-node-id'>Duration: {timeEndSeconds}</p>
 			</div>
 		</div>
 	</>);
