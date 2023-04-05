@@ -31,7 +31,3 @@
 .chris-control-button:active {
     color: rgba(100, 100, 150, 1);
 }
-
-.working {
-    box-shadow: 0px 0px 10px 2px yellow;
-}
