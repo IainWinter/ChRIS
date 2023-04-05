@@ -61,10 +61,29 @@ export async function getFeedPluginInstanceGraph(pluginId)
 
 	let initialStartTime = Date.parse(inst.data.start_date);
 
+	let depthMap = new Map();
+	let linkCountMap = new Map();
+
 	for (let node of tree.data)
 	{
 		let id = node.id;
-		let pid = node.previous_id;
+		let pid = node.previous_id ? node.previous_id : -1;
+
+		if (depthMap.has(pid))
+			depthMap.set(id, depthMap.get(pid) + 1);
+		else
+			depthMap.set(id, 0);
+
+		if (linkCountMap.has(pid))
+			linkCountMap.set(pid, linkCountMap.get(pid) + 1);
+		else
+			linkCountMap.set(pid, 1);
+	}
+
+	for (let node of tree.data)
+	{
+		let id = node.id;
+		let pid = node.previous_id ? node.previous_id : -1;
 
 		let nodeStartTime = Date.parse(node.start_date);
 		let nodeEndTime = Date.parse(node.end_date);
@@ -83,14 +102,27 @@ export async function getFeedPluginInstanceGraph(pluginId)
 				status: node.status,
 				id: id,
 
-				time_offset_ms: nodeEndTime - initialStartTime,
+				time_start_ms: nodeStartTime - initialStartTime,
+				time_end_ms: nodeEndTime - initialStartTime,
 
-				thumb_url: "./uv.png"
+				thumb_url: "./uv.png",
+
+				depth: depthMap.get(id),
+				parent_link_count: linkCountMap.get(pid),
+				link_count: linkCountMap.get(id),
 			},
 			position: { x: x, y: y }
 		});
 
+		let numbOfParentLinks = linkCountMap.get(pid);
+
+		// if (numbOfParentLinks > 0)
+		// {
+
+		// }
+
 		x += 300;
+		//y += linkCountMap.get(pid) * 300;
 
 		if (pid !== undefined)
 		{

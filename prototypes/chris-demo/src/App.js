@@ -41,15 +41,6 @@ const OverviewFlow = () => {
       onConnect={onConnect}
       nodeTypes={nodeTypes}
     >
-
-
-  {/* <div className="chris-controls">
-      <form onSubmit={(e) => submitForm(e)}>
-        <input type="number" name='nodeId'></input>
-        <button type='submit'>Submit</button>
-      </form>
-    </div> */}
-
       <Controls position='top-left' />
     </ReactFlow>
   );

@@ -20,7 +20,7 @@ function ChRISNode({ id, data })
 
 	return (<>
 		<div id={nodeId} className='chris-plugin-instance-node' status={data.status}>
-			<img src={data.thumb_url}></img>
+			{/* <img src={data.thumb_url}></img> */}
 			<div className='chris-plugin-instance-node-header'>
 				<p className='chris-plugin-instance-node-header-title'>{title}</p>
 				
@@ -42,7 +42,7 @@ function ChRISNode({ id, data })
 				})}
 
 				<p className='chris-plugin-instance-node-id'>{data.id}</p>
-				<p className='chris-plugin-instance-node-id'>{data.time_offset_ms}</p>
+				<p className='chris-plugin-instance-node-id'>{data.time_end_ms}</p>
 			</div>
 		</div>
 	</>);
