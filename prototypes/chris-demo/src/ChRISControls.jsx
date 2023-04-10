@@ -76,6 +76,20 @@ const ChRISControls = () =>
   }
 
   return (<>
+
+	{/* 
+
+		add another div
+		that lives above the 
+		control bar
+
+		look at ChRISControls.css for how to position this
+
+		just make sure to add a name property to the input tag
+		
+	*/}
+
+
     <div className="chris-controls">
       <button id="chris-control-replay" className='chris-control-button' title="Start Replay" onClick={startReplay}>&#9658;</button>
     </div>
