@@ -18,12 +18,14 @@ function ChRISNode({ id, data })
 		document.getElementById(nodeId).classList.toggle("hide-body");
 	}
 
-	let timeStartSeconds = data.time_start_ms / 1000;
-	let timeEndSeconds = (data.time_end_ms - data.time_start_ms) / 1000;
+	let timeStartSeconds = (data.time_start_ms / 1000).toFixed(2);
+	let timeEndSeconds = ((data.time_end_ms - data.time_start_ms) / 1000).toFixed(2);
+
+	// make grid of images if there are more than one
 
 	return (<>
 		<div id={nodeId} className='chris-plugin-instance-node' status={data.status}>
-			{/* <img src={data.thumb_url}></img> */}
+			<img src={data.thumb_url}></img>
 			<div className='chris-plugin-instance-node-header'>
 				<p className='chris-plugin-instance-node-header-title'>{title}</p>
 				
