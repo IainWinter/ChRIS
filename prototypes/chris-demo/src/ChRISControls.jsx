@@ -87,7 +87,17 @@ const ChRISControls = () =>
 
 		just make sure to add a name property to the input tag
 		
-	*/}
+	*/
+  <div class="IdForm">
+      <form>
+        <div class="input-feild">
+          <input type="number" name="id" required="" />
+          <label>ID</label>
+        </div>
+        <button type="submit" class="btn">SUBMIT</button>
+      </form>
+    </div>
+}
 
 
     <div className="chris-controls">

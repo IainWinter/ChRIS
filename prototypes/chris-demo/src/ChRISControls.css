@@ -31,3 +31,60 @@
 .chris-control-button:active {
     color: rgba(100, 100, 150, 1);
 }
+
+/* adding css for the Id form created */
+
+.IdForm {
+    position: absolute;
+    left: 10%;
+    top: 75%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.89);
+  
+    padding: 20px 30px;
+  }
+  .input-feild {
+    position: relative;
+  }
+  .input-feild label {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    font-size: 16px;
+    color: #fff;
+  
+    transition: all 0.5s ease-in-out;
+  }
+  .input-feild input {
+    border: 0;
+    border-bottom: 1px solid #555;
+    background: transparent;
+    width: 100%;
+    padding: 8px 0 5px 0;
+    font-size: 16px;
+    color: #fff;
+  }
+  .input-feild input:focus {
+    border: none;
+    outline: none;
+    border-bottom: 1px solid #613ce7;
+  }
+  .btn {
+    color: #fff;
+    background-color: #613ce7;
+    outline: none;
+    border: 0;
+    color: #fff;
+    padding: 5px 10px;
+    margin-top: 10px;
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .input-feild input:focus ~ label,
+  .input-feild input:valid ~ label {
+    top: -12px;
+    font-size: 12px;
+  }
+
+  /* end of css for the id form */
