@@ -2,6 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import ReactFlow, {
   addEdge,
   Controls,
+  ControlButton,
   Background,
   useNodesState,
   useEdgesState,
@@ -42,10 +43,28 @@ const OverviewFlow = () => {
       onConnect={onConnect}
       nodeTypes={nodeTypes}
     >
-      <Controls position='top-left' />
+      <CustomControls position/>
 	  <Background color="#333" variant="dots" />
     </ReactFlow>
   );
 };
 
 export default OverviewFlow;
+
+function CustomControls() {
+  return (
+    <Controls 
+      position='top-left'>
+      <ControlButton 
+        onClick={() => console.log('another action')} title="action">
+        <div>S</div>
+      </ControlButton>
+      <ControlButton onClick={() => console.log('another action')} title="another action">
+        <div>ID</div>
+      </ControlButton>
+      <script>
+
+      </script>
+    </Controls>
+  );
+}
