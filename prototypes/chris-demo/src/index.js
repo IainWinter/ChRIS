@@ -23,7 +23,7 @@ getChRISClientConnection().then(
 		root.render(
 		  <React.StrictMode>
 			<OverviewFlow />
-			<ChRISControls />
+		  	<ChRISControls />
 		  </React.StrictMode>
 		);
 	})

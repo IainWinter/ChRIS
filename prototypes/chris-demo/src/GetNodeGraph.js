@@ -77,6 +77,9 @@ async function getFiles(pinst)
 
 export async function getFeedPluginInstanceGraph(pluginId)
 {
+	if (!pluginId)
+		return;
+
 	let inst = await g_client.getPluginInstance(pluginId);
 	let tree = await inst.getDescendantPluginInstances();
 
@@ -128,7 +131,7 @@ export async function getFeedPluginInstanceGraph(pluginId)
 
 			position: { x: x, y: y },
 			dragHandle: '.chris-plugin-instance-node-header',
-			
+
 			data: {
 				title: title,
 				options: options,

@@ -44,12 +44,12 @@ const OverviewFlow = () => {
       onConnect={onConnect}
       nodeTypes={nodeTypes}
     >
-      <MiniMap 
+      {/* <MiniMap 
         nodeColor={'blue'} 
         nodeStrokeWidth={3} 
         position='top-right'
         zoomable 
-        pannable />
+        pannable /> */}
         <CustomControls/>
 	  <Background color="#333" variant="dots" />
     </ReactFlow>
