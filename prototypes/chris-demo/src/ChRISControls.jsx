@@ -90,9 +90,11 @@ const ChRISControls = () =>
         <label>Status</label>
       </div>
       <div class="StatusDisplay">
-        <label><node className="status"></node></label>
+        <label></label>
         <script>
-      
+
+          
+          
         </script>
       </div>
     </form>
