@@ -76,18 +76,32 @@ const ChRISControls = () =>
   }
 
   return (<>
-
-	{/* 
-
+{
+	/* 
 		add another div
 		that lives above the 
 		control bar
-
 		look at ChRISControls.css for how to position this
-
 		just make sure to add a name property to the input tag
-		
 	*/
+  <div class="StatusBar">
+    <form>
+      <div class="StatusLabel">
+        <label>Status</label>
+      </div>
+      <div class="StatusDisplay">
+        <label><node className="status"></node></label>
+        <script>
+      
+        </script>
+      </div>
+    </form>
+
+  </div>
+
+ 
+}
+{
   <div class="IdForm">
       <form>
         <div class="input-feild">

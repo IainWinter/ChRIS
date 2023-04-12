@@ -32,6 +32,30 @@
     color: rgba(100, 100, 150, 1);
 }
 
+/* adding css for the StatusBar form created */
+
+.StatusBar {
+  width: 22.5%;
+  height: 100px;
+  background: rgba(12, 0, 180, 0.89);
+
+  position: absolute;
+
+  bottom: 35%;
+  left: .04%;
+  
+  display: flex;
+  justify-content: space-around;
+
+  backdrop-filter: blur(10px);
+}
+.StatusLabel {
+  color: #fff;
+}
+.StatusDisplay {
+  
+}
+
 /* adding css for the Id form created */
 
 .IdForm {
