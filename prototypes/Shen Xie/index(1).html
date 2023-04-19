@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>index</title>
+  <body>
+    <div id="app">
+      <div class="content">
+        <div id="box1" onclick="clickBox()"></div>
+      </div>
+    </div>
+    <script type="text/javaScript">
+      let count = 1;
+      let position = 0
+      let moving = false;
+      currentId = 'box1';
+      function clickBox() {
+        if(count < 3) {
+          if(moving) {
+            return
+          }
+          count++;
+          let newBox = document.createElement("div");
+          newBox.id = "box" + count;
+          currentId = newBox.id;
+          newBox.style.width = "100px";
+          newBox.style.height = "40px";
+          newBox.style.backgroundColor = count === 2 ? "yellow" : "green";
+          newBox.style.position = "absolute";
+          newBox.style.left = position + "px";
+          newBox.style.top = "270px";
+          document.querySelector(".content").appendChild(newBox);
+          position += 250;
+          let boxArray = document.querySelectorAll(".content div");
+          for (let item of boxArray) {
+            if(item.id === currentId) {
+              console.log(item.id, '1111')
+              console.log(currentId, '2222')
+              moving = true
+              let timer = setInterval(() => {
+                if(parseInt(item.style.left) < position) {
+                  item.style.left = parseInt(item.style.left) + 10 + "px";
+                } else {
+                  moving = false
+                  clearInterval(timer);
+                }
+              }, 100);
+            }
+          }
+        }
+      }
+    </script>
+  </body>
+  <style>
+    html, body, p {
+      margin: 0;
+      padding: 0;
+    }
+    #app {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .content {
+      width: 600px;
+      height: 600px;
+      border: 1px solid black;
+      position: relative;
+    }
+    #box1 {
+      position: absolute;
+      width: 100px;
+      height: 40px;
+      background-color: red;
+      left: 0;
+      top: 270px;
+    }
+  </style>
+</html>
