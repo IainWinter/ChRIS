@@ -20,11 +20,12 @@ function ChRISNode({ id, data })
 	return (<>
 		<div id={nodeId} className='chris-plugin-instance-node' status={data.status}>
 			
-			{
+			{/* removing the image rendering to a position below the header */}
+			{/* {
 				(img === "" || hideThumb)
 					? <></>
 					: <><img src={img} className='chris-plugin-instance-node-thumb'></img></>
-			}
+			} */}
 			
 			<div className={headerClass}>
 				<p className='chris-plugin-instance-node-header-title'>{data.title}</p>
@@ -49,6 +50,14 @@ function ChRISNode({ id, data })
 				<Handle type="target" position={Position.Left} />
 				<Handle type="source" position={Position.Right} />
 			</div>
+
+
+			{
+				(img === "" || hideThumb)
+					? <></>
+					: <><img src={img} className='chris-plugin-instance-node-thumb'></img></>
+			}
+
 
 			{
 				hideBody
