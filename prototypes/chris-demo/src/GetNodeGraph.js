@@ -51,6 +51,12 @@ async function getParameters(pinst)
 	return options;
 }
 
+async function getImages(pint)
+{
+	let images = await pinst.getFiles();
+	return images;
+}
+
 export async function getFeedPluginInstanceGraph(pluginId)
 {
 	let inst = await g_client.getPluginInstance(pluginId);
