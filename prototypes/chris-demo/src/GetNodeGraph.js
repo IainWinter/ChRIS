@@ -33,22 +33,46 @@ export function getChRISClientConnection()
 		});
 }
 
+async function getFromPluginInstance(pinst, func, translate)
+{
+	let list = await func(pinst);
+	let out = [];
+
+	if (list.data)
+	for (let item of list.data)
+	{
+		out.push(translate(item));
+	}
+
+	return out;
+}
+
 async function getParameters(pinst)
 {
-	let instParameters = await pinst.getParameters();
-	let options = [];
-
-	if (instParameters.data)
-	for (let param of instParameters.data)
-	{
-		options.push({
+	return await getFromPluginInstance(
+		pinst, 
+		(pinst) => pinst.getParameters(), 
+		(param) => { return {
 			name: param.param_name,
 			value: param.value,
 			type: param.type,
-		});
-	}
+		}
+	});
+}
 
-	return options;
+async function getFiles(pinst)
+{
+	return ["ie/image1.png", "ie/image2.png", "ie/image3.png", "ie/image4.png"];
+
+	// there is some type of perm error
+
+	// return await getFromPluginInstance(
+	// 	pinst,
+	// 	(pinst) => pinst.getFiles(),
+	// 	(file) => { return {
+	// 		name: file.name
+	// 	}
+	// });
 }
 
 async function getImages(pint)
@@ -59,6 +83,9 @@ async function getImages(pint)
 
 export async function getFeedPluginInstanceGraph(pluginId)
 {
+	if (!pluginId)
+		return;
+
 	let inst = await g_client.getPluginInstance(pluginId);
 	let tree = await inst.getDescendantPluginInstances();
 
@@ -98,13 +125,23 @@ export async function getFeedPluginInstanceGraph(pluginId)
 
 		let pinst = inst.data.id === id ? inst : await g_client.getPluginInstance(id);
 		let options = await getParameters(pinst);
+		let files = await getFiles(pinst);
+
+		let title = node.plugin_name;
+		if (!title || title.length === 0)
+			title = "unset title";
 
 		g_nodes.push({
 			id: `${id}`,
 			type: 'plugininst',
+
+			position: { x: x, y: y },
+			dragHandle: '.chris-plugin-instance-node-header',
+
 			data: {
-				title: node.plugin_name,
+				title: title,
 				options: options,
+				files: files,
 				status: node.status,
 				id: id,
 
@@ -116,8 +153,7 @@ export async function getFeedPluginInstanceGraph(pluginId)
 				depth: depthMap.get(id),
 				parent_link_count: linkCountMap.get(pid),
 				link_count: linkCountMap.get(id),
-			},
-			position: { x: x, y: y }
+			}
 		});
 
 		let numbOfParentLinks = linkCountMap.get(pid);

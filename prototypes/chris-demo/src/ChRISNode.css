@@ -5,13 +5,26 @@
 	font-family: sans-serif;
 	position: relative;
 
-	min-width: 100px;
+	min-width: 200px;
+	
+	
+}
+
+
+
+.chris-plugin-instance-node-thumb {
+	width: 200px;
+	aspect-ratio: 1/1;
+
+	/* unclear why this is needed */
+    margin-bottom: -4px;
+
+	pointer-events: none;
 }
 
 .chris-plugin-instance-node-header {
 	background-color: rgb(0, 102, 204);
 	padding: 3px 10px;
-	border-radius: 5px 5px 0px 0px;
 
 	font-size: 12px;
 
@@ -19,6 +32,20 @@
 
 	display: flex;
 	justify-content: space-between;
+}
+
+.chris-plugin-instance-node-header-closed-top {
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+}
+
+.chris-plugin-instance-node-header-closed-bottom {
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+
+.chris-plugin-instance-node-header:hover {
+	cursor: pointer !important;
 }
 
 .chris-plugin-instance-node-header-title {
@@ -30,7 +57,8 @@
 	outline: none;
 	border: none;
 	color: white;
-	margin: auto 0 auto 20px;
+	margin: auto 0 auto 10px;
+    vertical-align: middle;
 }
 
 .chris-plugin-instance-hide-body-button:hover {
@@ -95,7 +123,7 @@
 }
 
 .chris-plugin-instance-node[status="finishedWithError"]:after {
-	content: "Finished with Error";
+	content: "Error";
 	position: absolute;
 	bottom: -1.4em;
 	right: 0;
@@ -215,3 +243,7 @@
 	border: none;
 	outline: none;
   }
+
+  /* trial */
+
+ 

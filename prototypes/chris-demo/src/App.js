@@ -2,9 +2,11 @@ import React, { useCallback, useEffect } from 'react';
 import ReactFlow, {
   addEdge,
   Controls,
+  ControlButton,
   Background,
   useNodesState,
   useEdgesState,
+  MiniMap,
 } from 'reactflow';
 
 import ChRISNode from './ChRISNode';
@@ -42,10 +44,41 @@ const OverviewFlow = () => {
       onConnect={onConnect}
       nodeTypes={nodeTypes}
     >
-      <Controls position='top-left' />
+      {/* <MiniMap 
+        nodeColor={'blue'} 
+        nodeStrokeWidth={3} 
+        position='top-right'
+        zoomable 
+        pannable /> */}
+        <CustomControls/>
 	  <Background color="#333" variant="dots" />
     </ReactFlow>
   );
 };
 
 export default OverviewFlow;
+
+function CustomControls() {
+  return (
+    <Controls 
+      position='top-left'>
+      <ControlButton 
+        onClick={() => console.log('another action')} title="action">
+        <div>S</div>
+      </ControlButton>
+      <ControlButton 
+        onClick={() => console.log('another action')} title="another action">
+        <div>ID</div>
+      </ControlButton>
+      <ControlButton 
+        onClick={() => console.log('another action')} 
+        title="another action"
+        area shape="rect" coords="0,0,82,126" href="sun.htm" alt="Sun">
+        <div>Map</div>
+      </ControlButton>
+      <script>
+
+      </script>
+    </Controls>
+  );
+}

@@ -76,23 +76,63 @@ const ChRISControls = () =>
   }
 
   return (<>
+{
+  // this should also be put in the control bar, just like they have it in
+  // the current UI, we will have the circles centered at the bottom
 
-	{/* 
+	// /* 
+	// 	add another div
+	// 	that lives above the 
+	// 	control bar
+	// 	look at ChRISControls.css for how to position this
+	// 	just make sure to add a name property to the input tag
+	// */
+  // <div class="StatusBar">
+  //   <form>
+  //     <div class="StatusLabel">
+  //       <label>Status</label>
+  //     </div>
+  //     <div class="StatusDisplay">
+  //       <label></label>
+  //       <script>
 
-		add another div
-		that lives above the 
-		control bar
+          
+          
+  //       </script>
+  //     </div>
+  //   </form>
 
-		look at ChRISControls.css for how to position this
-
-		just make sure to add a name property to the input tag
-		
-	*/}
-
-
-    <div className="chris-controls">
-      <button id="chris-control-replay" className='chris-control-button' title="Start Replay" onClick={startReplay}>&#9658;</button>
+  // </div>
+}
+{/* this shoiuld have been put in the control bar */}
+{/* {
+  <div class="IdForm">
+      <form>
+        <div class="input-feild">
+          <input type="number" name="id" required="" />
+          <label>ID</label>
+        </div>
+        <button type="submit" class="btn">SUBMIT</button>
+      </form>
     </div>
+} */}
+
+    {/* this is a useless feature. I think that if we are trying to do data viz it could be cool, but lets focus on
+      collapsing the need for other pannels. */}
+    { 
+      
+    
+      <div className="chris-controls">
+
+        {/* This is also useless because the feed is set from outside */}
+        <form className='chris-controls-id-input'>
+          <label>Id: </label>
+          <input name="id" type='number' defaultValue={0 /* use url param to set this */}></input>
+        </form>
+
+        {/* <button id="chris-control-replay" className='chris-control-button' title="Start Replay" onClick={startReplay}>&#9658;</button> */}
+      </div>
+    }
   </>);
 };
 

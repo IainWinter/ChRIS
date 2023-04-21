@@ -2,6 +2,8 @@ html, body {
 	margin: 0;
 	height: 100%;
 	width: 100%;
+
+	font-family: sans-serif;
 }
 
 #root {
@@ -10,4 +12,12 @@ html, body {
 
 .react-flow__attribution {
 	display: none;
+}
+
+.fake-href {
+	text-decoration: none;
+}
+
+.fake-ref:hover {
+	text-decoration: underline;
 }
