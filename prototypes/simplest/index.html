@@ -2,173 +2,402 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>D3 Tree Chart with Dragging and Zooming</title>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-        }
+	<meta charset="UTF-8">
+	<title>D3 Tree Chart with Dragging and Zooming</title>
 
-        svg {
-            width: 100%;
-            height: 100%;
-        }
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
 
-        foreignObject {
-            overflow: auto;
-        }
+	<style>
+		body {
+			margin: 0;
+			overflow: hidden;
+		}
 
-        .link {
-            fill: none;
-            stroke: #ccc;
-            stroke-width: 2px;
-        }
+		svg {
+			width: 100%;
+			height: 100%;
+		}
 
-        .box {
-            width: 100%;
-            height: 100%;
-            border: 1px solid black;
-        }
+		foreignObject {
+			overflow: visible;
+		}
 
-        .handle {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 10px;
-        }
+		.link {
+			fill: none;
+			stroke: #ccc;
+			stroke-width: 2px;
+		}
 
-        .left {
-            left: -5px;
-        }
+		.box {
+			width: 100%;
+			height: 100%;
+			border: 1px solid black;
+		}
 
-        .right {
-            right: -5px;
-        }
-    </style>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+		.handle {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			width: 10px;
+		}
+
+		.left {
+			left: -5px;
+		}
+
+		.right {
+			right: -5px;
+		}
+
+
+		/*
+		
+			CS410 Node
+
+		*/
+
+
+		:root
+		{
+			/* --node-width: 200px;
+			--node-height: 350px;
+			--header-height: 30px; */
+
+			--size: calc(var(--header-height) / 3);
+			--hsize: calc(var(--size) / 2);
+		}
+
+		.iw-plugin-instance-node
+		{
+			width: var(--node-width);
+			height: var(--node-height);
+
+			/* border: 1px solid black; */
+			border-radius: 5x;
+
+			font-family: sans-serif;
+
+			display: flex;
+			flex-direction: column;
+		}
+
+		.iw-plugin-instance-node .iw-header
+		{
+			height: var(--header-height);
+
+			background: blue;
+			display: flex;
+			justify-content: space-between;
+
+			padding: 0 10px;
+			position: relative;
+		}
+
+		.iw-plugin-instance-node .iw-body
+		{
+			background: grey;
+			margin: 0;
+			padding: 5px 10px;
+
+			display: flex;
+			flex-direction: column;
+			flex-grow: 1;
+		}
+
+		.iw-plugin-instance-node p,
+		.iw-plugin-instance-node i
+		{
+			margin: 0;
+			color: white;
+			fill: white;
+		}
+
+		.iw-plugin-instance-node .iw-preview {
+			max-width: 200px;
+		}
+
+		.iw-plugin-instance-node .iw-preview > *
+		{
+			display: block;
+			width: 100%;
+		}
+
+		.iw-plugin-instance-node .iw-controls > *
+		{
+			margin-left: 10px;
+		}
+
+		.iw-plugin-instance-node .iw-controls > *:hover
+		{
+			cursor: pointer;
+		}
+		
+		.iw-plugin-instance-node .iw-header > *
+		{
+			margin: auto 0;			
+		}
+
+		.iw-plugin-instance-node .iw-socket
+		{
+			position: absolute;
+			width: var(--size);
+			height: var(--size);
+			border-radius: 100%;
+			background: cyan;
+
+			top: calc(50% - var(--hsize));
+		}
+
+		.iw-plugin-instance-node .iw-socket-left
+		{
+			left: calc(0px - var(--hsize));
+		}
+
+		.iw-plugin-instance-node .iw-socket-right
+		{
+			right: calc(0px - var(--hsize));
+		}
+
+		.iw-plugin-instance-node.iw-hide-preview .iw-preview
+		{
+			opacity: 0;
+		}
+
+		.iw-plugin-instance-node.iw-hide-body .iw-body
+		{
+			opacity: 0;
+		}
+
+	</style>
+	<script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 
 <body>
-    <script>
-        // Define the data for the tree
-        var data = {
-            name: "A",
-            children: [
-                {
-                    name: "B",
-                    children: [
-                        { name: "C" },
-                        { name: "D" }
-                    ]
-                },
-                {
-                    name: "E",
-                    children: [
-                        { name: "F" },
-                        { name: "G" }
-                    ]
-                }
-            ]
-        };
+	<!-- <div class="iw-plugin-instance-node">
+		
+		<div class="iw-preview">
+			<img src="pfp.png">
+		</div>
 
-        function updateLines(d)
-        {
-            // get the x and y coordinates of the source and target nodes
-            const sourceX = d.source.y + 50;
-            const sourceY = d.source.x - 20;
-            const targetX = d.target.y - 50;
-            const targetY = d.target.x - 20;
+		<div class="iw-header">
+			<p>Test Title</p>
+			<div class="iw-controls">
+				<span><i class="bi bi-card-image"></i></span>
+				<span><i class="bi bi-folder"></i></span>
+			</div>
 
-            // calculate the x and y coordinates of the handle points
-            const sourceHandleX = sourceX + 100;
-            const sourceHandleY = sourceY;
-            const targetHandleX = targetX - 100;
-            const targetHandleY = targetY;
+			<div class="iw-socket iw-socket-left"></div>
+			<div class="iw-socket iw-socket-right"></div>
+		</div>
 
-            // construct the path using the handle points and node points
-            const path = `M${sourceX},${sourceY} C${sourceHandleX},${sourceHandleY} ${targetHandleX},${targetHandleY} ${targetX},${targetY}`;
+		<div class="iw-body">
+			<p>Files</p>
+			<hr>
+			<div class="iw-fileview">
+				<ul>
+					<li>Coffee</li>
+					<li>Tea</li>
+					<li>Milk</li>
+				  </ul>	
+			</div>
+			<div class="iw-status">
 
-            // return the updated path
-            return path;
-        }
-
-        function enableDragNodes()
-        {
-
-        }
-
-        // Define the tree layout
-        var treeLayout = d3.tree()
-            .size([window.innerWidth, window.innerHeight]);
-
-        // Generate the tree nodes and links
-        var root = d3.hierarchy(data);
-        var treeData = treeLayout(root);
-
-        // Create a new SVG element
-        var svg = d3.select("body")
-            .append("svg")
-            .attr("viewBox", [0, 0, window.innerWidth, window.innerHeight])
-            .call(d3.zoom() // Add zoom behavior to the SVG element
-                .extent([[0, 0], [window.innerWidth, window.innerHeight]])
-                .scaleExtent([0.5, 8])
-                .on("zoom", function (event) {
-                    svg.attr("transform", event.transform);
-                }))
-            .append("g");
-
-        // Add a group element for each link in the tree
-        var link = svg.selectAll(".link")
-            .data(treeData.links())
-            .enter()
-            .append("g")
-            .attr("class", "link")
-            .attr("d", d3.linkHorizontal()
-                .x(function(d) { return d.y; })
-                .y(function(d) { return d.x; }));
-
-        // Add a path element for each link, with a line connecting the source and target nodes
-        link.append("path")
-            .attr("class", "link-line")
-            .attr("d", updateLines);
-
-        // Add a group element for each node in the tree
-        var node = svg.selectAll(".node")
-            .data(treeData.descendants())
-            .enter()
-            .append("g")
-            .attr("class", "node")
-            .attr("transform", function (d) { return "translate(" + d.y + "," + d.x + ")"; })
-            .call(d3.drag() // Add drag behavior to the nodes
-                .on("start", function(d) {
-                    d.x0 = d.x;
-                    d.y0 = d.y;
-                })
-                .on("drag", function(d) {
-                    d.y = event.x - d.x0;
-                    d.x = event.y - d.y0;
-                    
-                    d3.select(this)
-                        .attr("transform", "translate(" + d.x + "," + d.y + ")");
-                    
-                    link.selectAll(".link-line") // Update the path elements
-                        .attr("d", updateLines);
-                }));
-        // Add a circle element for each node, with a radius of 10 pixels
-        // node.append("circle")
-        //     .attr("r", 10);
-
-        // Add a foreignObject element for each node, with a width and height of 50 pixels
-        node.append("foreignObject")
-            .attr("x", -50)
-            .attr("y", -25)
-            .attr("width", 100)
-            .attr("height", 50)
-            .html((d) => `<div class="box"><p>${d.data.name}</p><div class="handle left"></div><div class="handle right"></div></div>`)
+			</div>
+		</div>
+	</div> -->
 
 
-    </script>
+
+	<script>
+		// Define the data for the tree
+		var data = {
+			name: "A",
+			id: 0,
+			children: [
+				{
+					name: "B",
+					id: 1,
+					children: [
+						{ name: "C", id: 2 },
+						{ name: "D", id: 3 }
+					]
+				},
+				{
+					name: "E",
+					id: 4,
+					children: [
+						{ name: "F", id: 5 },
+						{ name: "G", id: 6 }
+					]
+				}
+			]
+		};
+
+		const gNodeWidth = 200;
+		const gNodeHeight = 360;
+		const gNodeHeaderHeight = 30;
+
+		function setRootVars()
+		{
+			let r = document.querySelector(":root")
+			r.style.setProperty("--node-width", gNodeWidth + "px");
+			r.style.setProperty("--node-height", gNodeHeight + "px");
+			r.style.setProperty("--header-height", gNodeHeaderHeight + "px");
+		}
+
+		setRootVars();
+
+		function updateLines(d) 
+		{
+			// 65 is a majic number for the height of 360
+
+			const sourceX = d.source.y + gNodeWidth / 2;
+			const sourceY = d.source.x + 65;
+			const targetX = d.target.y - gNodeWidth / 2;
+			const targetY = d.target.x + 65;
+
+			// calculate the x and y coordinates of the handle points
+			const sourceHandleX = sourceX + 100;
+			const sourceHandleY = sourceY;
+			const targetHandleX = targetX - 100;
+			const targetHandleY = targetY;
+
+			// construct the path using the handle points and node points
+			const path = `M${sourceX},${sourceY} C${sourceHandleX},${sourceHandleY} ${targetHandleX},${targetHandleY} ${targetX},${targetY}`;
+
+			// return the updated path
+			return path;
+		}
+
+		function toggleButton(id, divActiveClass, iconBtnClass, iconClass, iconActiveClass)
+		{
+			let div = document.getElementById(id);
+			let icon = div.querySelector("." + iconBtnClass);
+			
+			icon.classList.toggle(iconClass);
+			icon.classList.toggle(iconActiveClass);
+			div.classList.toggle(divActiveClass);
+		}
+
+		function togglePreview(id)
+		{
+			toggleButton(id, "iw-hide-preview", "iw-button-preview", "bi-image", "bi-image-fill");
+		}
+
+		function toggleBody(id)
+		{
+			toggleButton(id, "iw-hide-body", "iw-button-body", "bi-folder", "bi-folder2-open");
+		}
+
+		function createNodeHTML(d)
+		{
+			let socketLeft = d.parent === null 
+				? ''
+				: '<div class="iw-socket iw-socket-left"></div>';
+
+			let socketRight = d.children === undefined 
+				? ''
+				: '<div class="iw-socket iw-socket-right"></div>';
+
+			let id = `iw-node-${d.data.id}`;
+
+			return  `<div class="iw-plugin-instance-node" id="${id}">
+						<div class="iw-preview">
+							<img src="pfp.png">
+						</div>
+
+						<div class="iw-header">
+							<p>${d.data.title}</p>
+							<div class="iw-controls">
+								<span><i class="bi bi-image iw-button-preview" onclick="togglePreview('${id}')"></i></span>
+								<span><i class="bi bi-folder iw-button-body" onclick="toggleBody('${id}')"></i></span>
+							</div>
+
+							${socketLeft}
+							${socketRight}
+						</div>
+
+						<div class="iw-body">
+							<p>Files</p>
+							<hr>
+							<div class="iw-fileview">
+								<ul>
+									<li>Coffee</li>
+									<li>Tea</li>
+									<li>Milk</li>
+								</ul>	
+							</div>
+							<div class="iw-status">
+
+							</div>
+						</div>
+					</div>`;
+		}
+
+		function enableDragNodes() {
+
+		}
+
+		// Define the tree layout
+		var treeLayout = d3.tree()
+			.size([window.innerWidth, window.innerHeight]);
+
+		// Generate the tree nodes and links
+		var root = d3.hierarchy(data);
+		var treeData = treeLayout(root);
+
+		// Create a new SVG element
+		var svg = d3.select("body")
+			.append("svg")
+			.attr("viewBox", [0, 0, window.innerWidth, window.innerHeight])
+			.call(d3.zoom() // Add zoom behavior to the SVG element
+				.extent([[0, 0], [window.innerWidth, window.innerHeight]])
+				.scaleExtent([0.5, 8])
+				.on("zoom", function (event) {
+					svg.attr("transform", event.transform);
+				}))  
+			.append("g");
+
+		// Add a group element for each link in the tree
+		var link = svg.selectAll(".link")
+			.data(treeData.links())
+			.enter()
+			.append("g")
+			.attr("class", "link")
+			.attr("d", d3.linkHorizontal()
+				.x(function (d) { return d.y; })
+				.y(function (d) { return d.x; }));
+
+		// Add a path element for each link, with a line connecting the source and target nodes
+		link.append("path")
+			.attr("class", "link-line")
+			.attr("d", updateLines);
+
+		// Add a group element for each node in the tree
+		var node = svg.selectAll(".node")
+			.data(treeData.descendants())
+			.enter()
+			.append("g")
+			.attr("class", "node")
+			.attr("transform", function (d) { return "translate(" + d.y + "," + d.x + ")"; })
+			.call(d3.drag() // Add drag behavior to the nodes
+				.on("drag", function (event, d) {
+					d.x += event.dy;
+					d.y += event.dx;
+					d3.select(this).attr("transform", "translate(" + d.y + "," + d.x + ")");
+					link.selectAll(".link-line") // Update the path elements
+						.attr("d", updateLines);
+				}));
+
+		node.append("foreignObject")
+			.attr("x", -100)
+			.attr("y", -150)
+			.attr("width", 1)
+			.attr("height", 1)
+			.html(createNodeHTML);
+
+
+	</script>
 </body>
 
 </html>
