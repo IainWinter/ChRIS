@@ -75,7 +75,7 @@ async function getFiles(pinst)
 	// });
 }
 
-async function getImages(pint)
+async function getImages(pinst)
 {
 	let images = await pinst.getFiles();
 	return images;

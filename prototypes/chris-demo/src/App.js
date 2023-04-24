@@ -50,7 +50,7 @@ const OverviewFlow = () => {
         position='top-right'
         zoomable 
         pannable /> */}
-        <CustomControls/>
+        {/* <CustomControls/> */}
 	  <Background color="#333" variant="dots" />
     </ReactFlow>
   );
@@ -76,9 +76,6 @@ function CustomControls() {
         area shape="rect" coords="0,0,82,126" href="sun.htm" alt="Sun">
         <div>Map</div>
       </ControlButton>
-      <script>
-
-      </script>
     </Controls>
   );
 }

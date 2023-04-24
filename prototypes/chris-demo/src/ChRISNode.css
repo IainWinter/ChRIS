@@ -5,15 +5,13 @@
 	font-family: sans-serif;
 	position: relative;
 
-	min-width: 200px;
-	
-	
+	/* min-width: 200px; */
+	/* overflow: hidden; */
 }
 
-
-
 .chris-plugin-instance-node-thumb {
-	width: 200px;
+	width: 100%;
+	max-width: 200px;
 	aspect-ratio: 1/1;
 
 	/* unclear why this is needed */
@@ -118,7 +116,7 @@
 	font-size: 12px;
 }
 
-.chris-plugin-instance-node[status="finishedWithError"] .chris-plugin-instance-node-header{
+.chris-plugin-instance-node[status="finishedWithError"] .chris-plugin-instance-node-header {
 	background-color: rgb(255, 44, 44);
 }
 

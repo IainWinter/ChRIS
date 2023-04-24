@@ -1,14 +1,55 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { BsArrowBarUp, BsArrowBarDown, BsImage, BsImageFill } from 'react-icons/bs'
 
-import { Handle, Position } from 'reactflow';
+import { Handle, Position, useViewport } from 'reactflow';
 import './ChRISNode.css';
+import { g_nodes } from './GetNodeGraph';
 
 function ChRISNode({ id, data })
 {
 	let [img, setImg] = useState(data.files.length > 0 ? data.files[0] : "");
 	let [hideBody, setHideBody] = useState(false);
 	let [hideThumb, setHideThumb] = useState(false);
+	const { x, y, zoom } = useViewport();
+
+	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+	const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+
+	useEffect(() => {
+	  const handleWindowResize = () => {
+		setWindowWidth(window.innerWidth);
+		setWindowHeight(window.innerHeight);
+	  };
+  
+	  window.addEventListener('resize', handleWindowResize);
+	  return () => window.removeEventListener('resize', handleWindowResize);
+	});
+
+	let node = g_nodes.find(n => n.id === id);
+
+	// scale by a fisheye effect
+
+	let viewportCenterX = x - windowWidth / 2;
+	let viewportCenterY = y - windowHeight / 2;
+
+	let nodeDeltaFromViewportX = node.position.x + viewportCenterX;
+	let nodeDeltaFromViewportY = node.position.y + viewportCenterY;
+
+	let distFromViewportCenter = Math.sqrt(nodeDeltaFromViewportX*nodeDeltaFromViewportX+nodeDeltaFromViewportY*nodeDeltaFromViewportY);
+
+	let nDistFromViewportCenter = distFromViewportCenter / windowWidth;
+
+	let scaleFactor = 1 - nDistFromViewportCenter;
+
+	let style = {
+		width:  200 * scaleFactor + "px",
+		height: 400 * scaleFactor + "px",
+
+		minWidth: "10px",
+		minHeight: "10px",
+		maxWidth: "200px",
+		maxHeight: "200px"
+	};
 
 	let nodeId = "node" + data.id;
 
@@ -18,15 +59,7 @@ function ChRISNode({ id, data })
 	let headerClass = `chris-plugin-instance-node-header ${hideThumb ? "chris-plugin-instance-node-header-closed-top" : ""} ${hideBody ? "chris-plugin-instance-node-header-closed-bottom" : ""}`
 
 	return (<>
-		<div id={nodeId} className='chris-plugin-instance-node' status={data.status}>
-			
-			{/* removing the image rendering to a position below the header */}
-			{/* {
-				(img === "" || hideThumb)
-					? <></>
-					: <><img src={img} className='chris-plugin-instance-node-thumb'></img></>
-			} */}
-			
+		<div id={nodeId} className='chris-plugin-instance-node' status={data.status} style={style}>
 			<div className={headerClass}>
 				<p className='chris-plugin-instance-node-header-title'>{data.title}</p>
 
@@ -51,36 +84,17 @@ function ChRISNode({ id, data })
 				<Handle type="source" position={Position.Right} />
 			</div>
 
-
 			{
 				(img === "" || hideThumb)
 					? <></>
 					: <><img src={img} className='chris-plugin-instance-node-thumb'></img></>
 			}
 
-
 			{
 				hideBody
 					? ""
 					: <>
 						<div className='chris-plugin-instance-node-body'>
-
-
-							{/* This generates the list of settings, it seems like because the nodes are immutable, we dont need these.
-								I am a little confused as to why such a limitation would be in place when you can delete and replace a node
-								if you really wanted to.  */}
-							{/* {data.options.map((option) => 
-							{
-								return (<>
-									<span className='chris-plugin-instance-node-inline-input'>
-										<label className='chris-plugin-instance-node-input-label' htmlFor={option.name}>{option.name}</label>
-										<input className='chris-plugin-instance-node-input' type="text" name={option.name} value={option.value}></input>
-									</span>
-								</>);
-							})} */}
-
-							{/* Generate a list of files in the node, if they are pings or jpegs, display them in an img tag when clicked */}
-
 							{
 								data.files.map((file) => 
 								{
@@ -91,7 +105,6 @@ function ChRISNode({ id, data })
 									)
 								})
 							}
-
 							<p className='chris-plugin-instance-node-id'>Id: {data.id}</p>
 							<p className='chris-plugin-instance-node-id'>Time start: {timeStartSeconds}</p>
 							<p className='chris-plugin-instance-node-id'>Duration: {timeEndSeconds}</p>
