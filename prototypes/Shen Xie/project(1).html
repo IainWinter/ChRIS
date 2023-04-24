@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      html, body, p {
+        margin: 0;
+        padding: 0;
+      }
+      #app {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+        overflow: hidden;
+      }
+      #circle {
+        border-radius: 50%;
+        border: 1px solid black;
+        position: absolute;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="circle"></div>
+    </div>
+    <script type="text/javascript">
+      let dom = document.getElementById('app')
+      let circle = document.getElementById('circle')
+      dom.addEventListener('mousemove', (e) => {
+        let x = e.x
+        let y = e.y
+        let windowWidth = dom.offsetWidth
+        let windowHeight = dom.offsetHeight
+        let radius = 0
+        if (x <= 4 || y <= 4 || x >= windowWidth - 4 || y >= windowHeight - 4) {
+          circle.style.width = 0 + 'px'
+          circle.style.height = 0 + 'px'
+          circle.style.border = '0px solid black'
+        } else {
+          let width = Math.abs((windowWidth / 2) - Math.abs(windowWidth / 2 - x))
+          let height = Math.abs((windowHeight / 2) - Math.abs(windowHeight / 2 - y))
+          radius = Math.min(width, height)
+          circle.style.width = radius + 'px'
+          circle.style.height = radius + 'px'
+          circle.style.border = '1px solid black'
+        }
+        circle.style.left = (e.x - radius / 2) + 'px'
+        circle.style.top = (e.y - radius / 2) + 'px'
+      })
+    </script>
+  </body>
+</html>
