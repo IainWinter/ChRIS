@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>D3 Tree Chart with Dragging and Zooming</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        foreignObject {
+            overflow: auto;
+        }
+
+        .link {
+            fill: none;
+            stroke: #ccc;
+            stroke-width: 2px;
+        }
+
+        .box {
+            width: 100%;
+            height: 100%;
+            border: 1px solid black;
+        }
+
+        .handle {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 10px;
+        }
+
+        .left {
+            left: -5px;
+        }
+
+        .right {
+            right: -5px;
+        }
+    </style>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<body>
+    <script>
+        // Define the data for the tree
+        var data = {
+            name: "A",
+            children: [
+                {
+                    name: "B",
+                    children: [
+                        { name: "C" },
+                        { name: "D" }
+                    ]
+                },
+                {
+                    name: "E",
+                    children: [
+                        { name: "F" },
+                        { name: "G" }
+                    ]
+                }
+            ]
+        };
+
+        function updateLines(d)
+        {
+            // get the x and y coordinates of the source and target nodes
+            const sourceX = d.source.y + 50;
+            const sourceY = d.source.x - 20;
+            const targetX = d.target.y - 50;
+            const targetY = d.target.x - 20;
+
+            // calculate the x and y coordinates of the handle points
+            const sourceHandleX = sourceX + 100;
+            const sourceHandleY = sourceY;
+            const targetHandleX = targetX - 100;
+            const targetHandleY = targetY;
+
+            // construct the path using the handle points and node points
+            const path = `M${sourceX},${sourceY} C${sourceHandleX},${sourceHandleY} ${targetHandleX},${targetHandleY} ${targetX},${targetY}`;
+
+            // return the updated path
+            return path;
+        }
+
+        function enableDragNodes()
+        {
+
+        }
+
+        // Define the tree layout
+        var treeLayout = d3.tree()
+            .size([window.innerWidth, window.innerHeight]);
+
+        // Generate the tree nodes and links
+        var root = d3.hierarchy(data);
+        var treeData = treeLayout(root);
+
+        // Create a new SVG element
+        var svg = d3.select("body")
+            .append("svg")
+            .attr("viewBox", [0, 0, window.innerWidth, window.innerHeight])
+            .call(d3.zoom() // Add zoom behavior to the SVG element
+                .extent([[0, 0], [window.innerWidth, window.innerHeight]])
+                .scaleExtent([0.5, 8])
+                .on("zoom", function (event) {
+                    svg.attr("transform", event.transform);
+                }))
+            .append("g");
+
+        // Add a group element for each link in the tree
+        var link = svg.selectAll(".link")
+            .data(treeData.links())
+            .enter()
+            .append("g")
+            .attr("class", "link")
+            .attr("d", d3.linkHorizontal()
+                .x(function(d) { return d.y; })
+                .y(function(d) { return d.x; }));
+
+        // Add a path element for each link, with a line connecting the source and target nodes
+        link.append("path")
+            .attr("class", "link-line")
+            .attr("d", updateLines);
+
+        // Add a group element for each node in the tree
+        var node = svg.selectAll(".node")
+            .data(treeData.descendants())
+            .enter()
+            .append("g")
+            .attr("class", "node")
+            .attr("transform", function (d) { return "translate(" + d.y + "," + d.x + ")"; })
+            .call(d3.drag() // Add drag behavior to the nodes
+                .on("start", function(d) {
+                    d.x0 = d.x;
+                    d.y0 = d.y;
+                })
+                .on("drag", function(d) {
+                    d.y = event.x - d.x0;
+                    d.x = event.y - d.y0;
+                    
+                    d3.select(this)
+                        .attr("transform", "translate(" + d.x + "," + d.y + ")");
+                    
+                    link.selectAll(".link-line") // Update the path elements
+                        .attr("d", updateLines);
+                }));
+        // Add a circle element for each node, with a radius of 10 pixels
+        // node.append("circle")
+        //     .attr("r", 10);
+
+        // Add a foreignObject element for each node, with a width and height of 50 pixels
+        node.append("foreignObject")
+            .attr("x", -50)
+            .attr("y", -25)
+            .attr("width", 100)
+            .attr("height", 50)
+            .html((d) => `<div class="box"><p>${d.data.name}</p><div class="handle left"></div><div class="handle right"></div></div>`)
+
+
+    </script>
+</body>
+
+</html>
